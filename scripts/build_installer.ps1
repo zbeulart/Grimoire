@@ -17,7 +17,9 @@ if (Test-Path "$Root\build") { Remove-Item -Recurse -Force "$Root\build" }
 & $PyInstaller --noconfirm --windowed --onedir --noupx `
     --name "Grimoire" `
     --icon "$Root\assets\grimoire.ico" `
+    --paths "$Root\src" `
     --add-data "$Root\data;data" `
+    --collect-submodules "bworkgrimoire" `
     --collect-all "PySide6.QtWebEngineWidgets" `
     --collect-all "PySide6.QtWebChannel" `
     "$Root\main.py"

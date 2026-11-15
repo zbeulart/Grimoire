@@ -36,7 +36,9 @@ jobs:
           pyinstaller --noconfirm --windowed --onedir --noupx `
             --name Grimoire `
             --icon assets/grimoire.ico `
+            --paths src `
             --add-data "data;data" `
+            --collect-submodules bworkgrimoire `
             --collect-all PySide6.QtWebEngineWidgets `
             --collect-all PySide6.QtWebChannel `
             main.py
