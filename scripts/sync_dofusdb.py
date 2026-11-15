@@ -33,12 +33,12 @@ BASE_URL = "https://api.dofusdb.fr"
 HEADERS = {"User-Agent": "BworkGrimoire/0.1 (+https://bworkshop.app)"}
 
 
-def _pick_fr(mapping: dict | str | None) -> str:
+def _pick(mapping: dict | str | None, lang: str = "fr") -> str:
     if isinstance(mapping, str):
         return mapping
     if not isinstance(mapping, dict):
         return ""
-    return mapping.get("fr") or mapping.get("en") or ""
+    return mapping.get(lang) or mapping.get("fr") or mapping.get("en") or ""
 
 
 def fetch_breeds(client: httpx.Client) -> list[dict]:
@@ -82,14 +82,16 @@ def fetch_spell_levels(client: httpx.Client, level_ids: list[int]) -> dict[int, 
     return levels_by_id
 
 
-def build_spell(raw_spell: dict, levels_by_id: dict[int, dict]) -> SpellInfo:
+def build_spell(raw_spell: dict, levels_by_id: dict[int, dict], lang: str = "fr") -> SpellInfo:
     """Construit un SpellInfo en choisissant le niveau maximal disponible."""
     level_ids = [int(lid) for lid in raw_spell.get("spellLevels", [])]
     candidates = [levels_by_id[lid] for lid in level_ids if lid in levels_by_id]
     best = max(candidates, key=lambda lv: lv.get("grade", 0), default={})
 
-    name = _pick_fr(raw_spell.get("name"))
-    description = clean_description(_pick_fr(raw_spell.get("description")))
+    fr_name = _pick(raw_spell.get("name"), "fr")
+    fr_description = clean_description(_pick(raw_spell.get("description"), "fr"))
+    name = _pick(raw_spell.get("name"), lang)
+    description = clean_description(_pick(raw_spell.get("description"), lang))
     return SpellInfo(
         id=int(raw_spell["id"]),
         name=name,
@@ -106,8 +108,8 @@ def build_spell(raw_spell: dict, levels_by_id: dict[int, dict]) -> SpellInfo:
         max_per_turn=int(best.get("maxCastPerTurn", 0)),
         max_per_target=int(best.get("maxCastPerTarget", 0)),
         crit_chance=int(best.get("criticalHitProbability", 0)),
-        element=infer_element(description),
-        tags=infer_tactical_tags(name, description),
+        element=infer_element(fr_description),
+        tags=infer_tactical_tags(fr_name, fr_description),
     )
 
 
@@ -115,16 +117,17 @@ def build_dataset(
     raw_breeds: list[dict],
     raw_variants: list[dict],
     levels_by_id: dict[int, dict],
+    lang: str = "fr",
 ) -> dict:
-    """Assemble le dictionnaire sérialisable complet pour data/spells_fr.json."""
+    """Assemble le dictionnaire sérialisable complet pour data/spells_<lang>.json."""
     variants_by_breed: dict[int, list[SpellVariantPair]] = {}
     for var in raw_variants:
         breed_id = int(var.get("breedId", 0))
         spells = var.get("spells", [])
         if not breed_id or not spells:
             continue
-        primary = build_spell(spells[0], levels_by_id)
-        variant = build_spell(spells[1], levels_by_id) if len(spells) > 1 else None
+        primary = build_spell(spells[0], levels_by_id, lang=lang)
+        variant = build_spell(spells[1], levels_by_id, lang=lang) if len(spells) > 1 else None
         pair = SpellVariantPair(
             variant_id=int(var.get("id", 0)),
             primary=primary,
@@ -138,8 +141,8 @@ def build_dataset(
         pairs = variants_by_breed.get(bid, [])
         breed = BreedInfo(
             id=bid,
-            name=_pick_fr(raw_b.get("shortName")) or _pick_fr(raw_b.get("name")),
-            description=_pick_fr(raw_b.get("description")),
+            name=_pick(raw_b.get("shortName"), lang) or _pick(raw_b.get("name"), lang),
+            description=_pick(raw_b.get("description"), lang),
             img_url=raw_b.get("img", ""),
             pairs=tuple(pairs),
         )
@@ -147,6 +150,7 @@ def build_dataset(
 
     return {
         "source": "DofusDB (https://dofusdb.fr)",
+        "lang": lang,
         "synced_at": datetime.now(timezone.utc).isoformat(),
         "breeds": breeds,
     }
@@ -184,10 +188,12 @@ def download_icons(dataset: dict, icons_dir: Path, client: httpx.Client) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Synchronise les sorts Dofus depuis DofusDB.")
     parser.add_argument("--with-icons", action="store_true", help="Pré-télécharge les icônes PNG.")
+    parser.add_argument("--lang", choices=("fr", "en", "both"), default="both", help="Langues à exporter.")
     args = parser.parse_args()
 
-    out_path = ROOT / "data" / "spells_fr.json"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    data_dir = ROOT / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    langs = ("fr", "en") if args.lang == "both" else (args.lang,)
 
     with httpx.Client(timeout=20.0, headers=HEADERS, follow_redirects=True) as client:
         print("1/3 Récupération des classes...")
@@ -209,12 +215,17 @@ def main() -> None:
         print(f"3/3 Récupération des stats ({len(set(target_level_ids))} niveaux de sorts)...")
         levels_by_id = fetch_spell_levels(client, target_level_ids)
 
-        dataset = build_dataset(raw_breeds, raw_variants, levels_by_id)
-        out_path.write_text(json.dumps(dataset, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"Sauvegardé : {out_path}")
+        first_dataset = None
+        for lang in langs:
+            dataset = build_dataset(raw_breeds, raw_variants, levels_by_id, lang=lang)
+            if first_dataset is None:
+                first_dataset = dataset
+            out_path = data_dir / f"spells_{lang}.json"
+            out_path.write_text(json.dumps(dataset, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"Sauvegardé : {out_path}")
 
-        if args.with_icons:
-            count = download_icons(dataset, ROOT / "data" / "icons", client)
+        if args.with_icons and first_dataset is not None:
+            count = download_icons(first_dataset, data_dir / "icons", client)
             print(f"Icônes téléchargées : {count}")
 
 

@@ -122,3 +122,42 @@ def test_export_web_bundle_builds_portable_static_site(tmp_path):
     assert "file://" not in html
     assert "icons/s1.png" in html
     assert '"fonts/AlegreyaSans-Regular.ttf"' in html or 'fonts/AlegreyaSans-Regular.ttf' in html
+
+
+def test_format_effect_en_handles_official_templates_and_spell_damage():
+    cat = EffectCatalog(
+        spells={10: {"id": 10, "name": {"fr": "Mot Test", "en": "Test Word"}}},
+        effects={
+            96: {"description": {"fr": "#1{{~1~2 à }}#2 dommages Eau", "en": "#1{{~1~2 to }}#2 Water damage"}, "elementId": 3},
+            108: {"description": {"fr": "#1{{~1~2 à }}#2 soins Feu", "en": "#1{{~1~2 to }}#2\xa0Fire heals"}, "elementId": 2},
+            281: {"description": {"fr": "#1 : +#3 Portée maximale", "en": "#1: +#3 Maximum Range"}, "elementId": -1},
+            406: {"description": {"fr": "Enlève les effets du sort #2", "en": "Removes the effects of the #2 spell"}, "elementId": -1},
+            2812: {"description": {"fr": "#1{{~1~2 à }}#2% Dommages aux sorts", "en": "#1{{~1~2 to }}#2% Spell Damage"}, "elementId": -1},
+        },
+        states={7: "Gravity"},
+    )
+    assert format_effect({"effectId": 96, "diceNum": 10, "diceSide": 12}, cat, lang="en") == [
+        "<b>10</b> to <b>12</b> Water damage",
+        "dmg",
+        "eau",
+    ]
+    assert format_effect({"effectId": 108, "diceNum": 5, "diceSide": 7}, cat, lang="en") == [
+        "<b>5</b> to <b>7</b> Fire heals",
+        "heal",
+        "feu",
+    ]
+    assert format_effect({"effectId": 281, "diceNum": 10, "value": 2}, cat, lang="en") == [
+        '<b class="nm">Test Word</b>: +<b>2</b> Maximum Range',
+        "",
+        "",
+    ]
+    assert format_effect({"effectId": 406, "value": 10}, cat, lang="en") == [
+        'Removes the effects of the <b class="nm">Test Word</b> spell',
+        "",
+        "",
+    ]
+    assert format_effect({"effectId": 2812, "diceNum": 10, "duration": -1}, cat, lang="en") == [
+        '<b>10</b>% Spell Damage <span class="dur">(infinite)</span>',
+        "",
+        "",
+    ]

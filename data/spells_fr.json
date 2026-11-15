@@ -1,6 +1,7 @@
 {
   "source": "DofusDB (https://dofusdb.fr)",
-  "synced_at": "2026-11-15T01:27:58.741864+00:00",
+  "lang": "fr",
+  "synced_at": "2026-11-15T04:20:59.580473+00:00",
   "breeds": [
     {
       "id": 1,
@@ -9954,7 +9955,7 @@
           "primary": {
             "id": 12737,
             "name": "Mutilation",
-            "description": "Sacrifie une partie de la vie du lanceur pour augmenter sa Puissance.\nÀ chaque début de tour, sacrifie de nouveau une partie de sa vie pour incrémenter son état de Mutilation tant que le sort est actif.\n\nRelancer le sort retire les effets appliqués et lance le sort Coagulation :\n• Applique un bouclier sur le lanceur.\n• Le bouclier est plus important selon l'état de Mutilation.",
+            "description": "Sacrifie une partie de la vie du lanceur pour augmenter sa Puissance.\nÀ chaque début de tour, sacrifie de nouveau une partie de sa vie pour incrémenter son état de Mutilation tant que le sort est actif.\n\nRelancer le sort retire les effets appliqués et lance le sort Coagulation :\n• Applique un bouclier sur le lanceur.\n• Le bouclier est plus important selon l'état de Mutilation.",
             "img_url": "https://api.dofusdb.fr/img/spells/sort_11934.png",
             "ap_cost": 2,
             "min_range": 0,
@@ -10380,7 +10381,7 @@
           "variant": {
             "id": 12751,
             "name": "Entaille",
-            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Terre.",
+            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Terre.",
             "img_url": "https://api.dofusdb.fr/img/spells/sort_11974.png",
             "ap_cost": 4,
             "min_range": 1,
@@ -10423,7 +10424,7 @@
           "variant": {
             "id": 12747,
             "name": "Immolation",
-            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Feu en zone.\nLes dommages n'affectent pas le lanceur.",
+            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Feu en zone.\nLes dommages n'affectent pas le lanceur.",
             "img_url": "https://api.dofusdb.fr/img/spells/sort_11960.png",
             "ap_cost": 4,
             "min_range": 0,
@@ -10510,7 +10511,7 @@
           "variant": {
             "id": 12755,
             "name": "Déchaînement",
-            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Eau en zone.\nLes dommages n'affectent pas le lanceur.",
+            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Eau en zone.\nLes dommages n'affectent pas le lanceur.",
             "img_url": "https://api.dofusdb.fr/img/spells/sort_11955.png",
             "ap_cost": 4,
             "min_range": 0,
@@ -10553,7 +10554,7 @@
           "variant": {
             "id": 12752,
             "name": "Carnage",
-            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Air en zone.",
+            "description": "Sacrifie une partie de la vie du lanceur pour occasionner des dommages Air en zone.",
             "img_url": "https://api.dofusdb.fr/img/spells/sort_11975.png",
             "ap_cost": 4,
             "min_range": 1,

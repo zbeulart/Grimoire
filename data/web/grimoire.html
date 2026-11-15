@@ -87,6 +87,10 @@ button{background:none;border:0;cursor:pointer}
 .icon-btn{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--muted)}
 .icon-btn:hover{background:rgba(255,255,255,.05);color:var(--text)}
 .icon-btn svg{width:16px;height:16px}
+.lang-sw{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:7px;background:rgba(0,0,0,.22);padding:2px;gap:2px;flex:none}
+.lang-sw button{height:22px;padding:0 7px;border-radius:5px;font:700 11px/1 "Alegreya SC",serif;letter-spacing:.08em;color:var(--muted);transition:color .12s,background .12s}
+.lang-sw button:hover{color:var(--text)}
+.lang-sw button[aria-pressed="true"]{background:var(--gold-soft);color:var(--gold-2);box-shadow:inset 0 0 0 1px rgba(217,180,107,.38)}
 
 /* ---------- Classes ---------- */
 .classes{padding:14px 16px 12px}
@@ -278,6 +282,7 @@ body.resizing{cursor:nwse-resize;user-select:none}
       <path d="M32 3.5l1.2 3.3 3.3 1.2-3.3 1.2L32 12.5l-1.2-3.3L27.5 8l3.3-1.2z" fill="#ffe7a3"/>
       <path d="M3 37v4l5-1M61 37v4l-5-1" fill="none" stroke="url(#bkGold)" stroke-width="2.4" stroke-linecap="round"/>
     </svg></button><span class="cn" id="className"></span></h1>
+    <div class="lang-sw" id="langSwitch" role="group" aria-label="Language"><button type="button" data-lang="fr" aria-pressed="true">FR</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
   </header>
 
   <section class="classes">
@@ -337,20 +342,93 @@ if(HOST==='qt') document.documentElement.classList.add('qt');
 else if(new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');
 const BREEDS = DATA.breeds;
 
-const EL = {
-  Feu:{c:'var(--feu)'}, Eau:{c:'var(--eau)'}, Air:{c:'var(--air)'}, Terre:{c:'var(--terre)'},
-  Multi:{c:'var(--multi)'}, Utilitaire:{c:'var(--soutien)', label:'Soutien'}
+const urlLang = new URLSearchParams(location.search).get('lang');
+const savedLang = (()=>{ try{ return localStorage.getItem('grimoire-lang'); }catch(_){ return null; } })();
+const initialLang = (urlLang==='en'||urlLang==='fr') ? urlLang : ((savedLang==='en'||savedLang==='fr') ? savedLang : 'fr');
+
+const I18N = {
+  fr:{
+    title:'Grimoire — Sorts Dofus', close:'Refermer le grimoire', open:'Ouvrir le grimoire',
+    classes:'Classes', search:'Chercher : érosion, invocation, pousse…', clear:'Effacer',
+    effect:'Effet', resize:'Redimensionner', ap:'PA', rangeUnit:' PO', noCd:'sans relance',
+    cd:n=>`relance ${n}`, perTurn:n=>`${n}/tour`, los:'LdV', noLos:'sans LdV',
+    variant:'VARIANTE', variantOf:n=>`Variante de ${n}`, spellCol:'SORT', variantCol:'VARIANTE',
+    cost:'Coût', cooldown:'Relance', range:'Portée', mod:' (modifiable)',
+    noLosLong:' · sans ligne de vue', lineCast:' · en ligne', perTurnLong:'Lancers par tour',
+    perTarget:'Par cible', crit:'Critique', stack:'Cumul max', effects:'EFFETS',
+    critEffects:'EFFETS CRITIQUES', pin:'Clic pour épingler', unpin:'Clic pour fermer',
+    clearFilters:'Effacer les filtres', empty:n=>`Aucun sort chez ${n}`, elsewhere:'Présent chez :',
+    emptyHint:'Essayez un autre mot ou retirez un filtre.',
+    spellCount:(n,h)=>`${n} — ${h} sort${h>1?'s':''}`,
+    tags:{},
+  },
+  en:{
+    title:'Grimoire — Dofus Spells', close:'Close the grimoire', open:'Open the grimoire',
+    classes:'Classes', search:'Search: erosion, summon, push…', clear:'Clear',
+    effect:'Effect', resize:'Resize', ap:'AP', rangeUnit:' Range', noCd:'no CD',
+    cd:n=>`CD ${n}`, perTurn:n=>`${n}/turn`, los:'LoS', noLos:'no LoS',
+    variant:'VARIANT', variantOf:n=>`Variant of ${n}`, spellCol:'SPELL', variantCol:'VARIANT',
+    cost:'Cost', cooldown:'Cooldown', range:'Range', mod:' (modifiable)',
+    noLosLong:' · no line of sight', lineCast:' · linear cast', perTurnLong:'Casts per turn',
+    perTarget:'Per target', crit:'Critical', stack:'Max stack', effects:'EFFECTS',
+    critEffects:'CRITICAL EFFECTS', pin:'Click to pin', unpin:'Click to close',
+    clearFilters:'Clear filters', empty:n=>`No spells for ${n}`, elsewhere:'Found in:',
+    emptyHint:'Try another keyword or clear a filter.',
+    spellCount:(n,h)=>`${n} — ${h} spell${h>1?'s':''}`,
+    tags:{
+      'Érosion':'Erosion', 'Débuff':'Unbewitch', 'Pesanteur':'Gravity',
+      'Invulnérable':'Invulnerable', 'Bouclier':'Shield', 'Soin':'Heal',
+      'Placement':'Placement', 'Retrait PA/PM':'AP/MP Theft',
+      'Invocation':'Summon', 'Boost':'Boost',
+    },
+  },
 };
-const elLabel = e => (EL[e]&&EL[e].label)||e;
-const elColor = e => (EL[e]||EL.Utilitaire).c;
+
+const EL = {
+  Feu:{c:'var(--feu)', fr:'Feu', en:'Fire'},
+  Eau:{c:'var(--eau)', fr:'Eau', en:'Water'},
+  Air:{c:'var(--air)', fr:'Air', en:'Air'},
+  Terre:{c:'var(--terre)', fr:'Terre', en:'Earth'},
+  Multi:{c:'var(--multi)', fr:'Multi', en:'Multi'},
+  Utilitaire:{c:'var(--soutien)', fr:'Soutien', en:'Support'}
+};
 
 const start = Math.max(0, BREEDS.findIndex(b=>b.name==='Eniripsa'));
-const state = { b:start, el:'Tous', fx:'', q:'', pin:null };
+const state = { b:start, el:'Tous', fx:'', q:'', pin:null, lang:initialLang };
+
+const T = () => I18N[state.lang] || I18N.fr;
+const locBreed = b => (state.lang==='en' && b.name_en) ? b.name_en : b.name;
+const locSpell = s => (state.lang==='en' && s.en) ? s.en : s;
+const tagLabel = t => T().tags[t] || t;
+const elLabel = e => { const x = EL[e]; return x ? (x[state.lang] || x.fr || e) : e; };
+const elColor = e => (EL[e]||EL.Utilitaire).c;
 
 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const range = s => (s.rmin===s.rmax? `${s.rmax}` : `${s.rmin}–${s.rmax}`) + ' PO';
+const range = s => (s.rmin===s.rmax? `${s.rmax}` : `${s.rmin}–${s.rmax}`) + T().rangeUnit;
 const breed = () => BREEDS[state.b];
+
+function applyStaticI18n(){
+  const t = T();
+  document.documentElement.lang = state.lang;
+  document.title = t.title;
+  const closeBtn = document.getElementById('closeBook');
+  if(closeBtn){ closeBtn.title = t.close; closeBtn.setAttribute('aria-label', t.close); }
+  const widgetBtn = document.getElementById('widget');
+  if(widgetBtn){ widgetBtn.title = t.open; widgetBtn.setAttribute('aria-label', t.open); }
+  const grid = document.getElementById('classGrid');
+  if(grid) grid.setAttribute('aria-label', t.classes);
+  const qi = document.getElementById('q');
+  if(qi) qi.placeholder = t.search;
+  const clr = document.querySelector('#searchWrap .clear');
+  if(clr) clr.setAttribute('aria-label', t.clear);
+  const fxs = document.getElementById('fx');
+  if(fxs) fxs.setAttribute('aria-label', t.effect);
+  document.querySelectorAll('[data-grip]').forEach(g=>{ g.title = t.resize; });
+  document.querySelectorAll('#langSwitch [data-lang]').forEach(btn=>{
+    btn.setAttribute('aria-pressed', String(btn.dataset.lang === state.lang));
+  });
+}
 
 function hl(text){
   const q = state.q.trim(); if(!q) return esc(text);
@@ -367,11 +445,14 @@ function matches(s){
 }
 /* Texte cherchable : nom, description, tags et effets exacts (normaux + critiques) */
 function idx(s){
-  if(s._i === undefined){
-    const fx = [...s.fx, ...s.cfx].map(f=>f[0].replace(/<[^>]+>/g,'')).join(' ');
-    s._i = norm([s.name, s.desc, s.tags.join(' '), fx].join(' ')).replace(/&#x27;/g,"'");
+  s._i = s._i || {};
+  if(s._i[state.lang] === undefined){
+    const ls = locSpell(s);
+    const fx = [...ls.fx, ...ls.cfx].map(f=>f[0].replace(/<[^>]+>/g,'')).join(' ');
+    const tagsTxt = s.tags.map(tagLabel).join(' ');
+    s._i[state.lang] = norm([ls.name, ls.desc, tagsTxt, fx].join(' ')).replace(/&#x27;/g,"'");
   }
-  return s._i;
+  return s._i[state.lang];
 }
 /* Nombre de sorts d'une classe qui contiennent la recherche */
 function hits(b){ const q = norm(state.q.trim()); if(!q) return 0; return b.pairs.reduce((n,p)=>n+(idx(p.a).includes(q)?1:0)+(idx(p.b).includes(q)?1:0),0); }
@@ -379,22 +460,24 @@ const filtering = () => state.el!=='Tous' || state.fx || state.q.trim();
 
 /* Stats d'un sort ; pour la variante, ce qui change par rapport au sort est mis en évidence */
 function stats(s, ref){
+  const t = T();
   const c = (v, rv) => ref && v!==rv ? ' class="chg"' : '';
   const out = [];
   out.push(`<span${c(s.el, ref&&ref.el)}><span class="dot" style="--c:${elColor(s.el)}"></span>${elLabel(s.el)}</span>`);
-  out.push(`<span${c(s.ap, ref&&ref.ap)}>${s.ap} PA</span>`);
+  out.push(`<span${c(s.ap, ref&&ref.ap)}>${s.ap} ${t.ap}</span>`);
   out.push(`<span${c(range(s), ref&&range(ref))}>${range(s)}</span>`);
-  if(s.cd || (ref&&ref.cd)) out.push(`<span${c(s.cd, ref&&ref.cd)}>${s.cd? `relance ${s.cd}` : 'sans relance'}</span>`);
-  else if(s.mt) out.push(`<span${c(s.mt, ref&&ref.mt)}>${s.mt}/tour</span>`);
-  if(!s.los || (ref && !ref.los)) out.push(`<span${c(s.los, ref&&ref.los)}>${s.los?'LdV':'sans LdV'}</span>`);
+  if(s.cd || (ref&&ref.cd)) out.push(`<span${c(s.cd, ref&&ref.cd)}>${s.cd? t.cd(s.cd) : t.noCd}</span>`);
+  else if(s.mt) out.push(`<span${c(s.mt, ref&&ref.mt)}>${t.perTurn(s.mt)}</span>`);
+  if(!s.los || (ref && !ref.los)) out.push(`<span${c(s.los, ref&&ref.los)}>${s.los? t.los : t.noLos}</span>`);
   return out.join('');
 }
 
 function spellHTML(s, key, ref){
   const miss = filtering() && !matches(s);
+  const ls = locSpell(s);
   return `<div class="spell ${miss?'miss':''} ${state.pin===key?'pinned':''}" data-key="${key}">
     <span class="ico"><img src="${s.img}" alt="" loading="lazy"></span>
-    <div><span class="name"><span class="nt">${hl(s.name)}</span>${ref?'<span class="role">VARIANTE</span>':''}</span><div class="stats">${stats(s, ref)}</div></div>
+    <div><span class="name"><span class="nt">${hl(ls.name)}</span>${ref?`<span class="role">${T().variant}</span>`:''}</span><div class="stats">${stats(s, ref)}</div></div>
   </div>`;
 }
 
@@ -405,21 +488,22 @@ function fxList(list){
   return `<ul class="fx">${list.map(([h,k,el])=>`<li class="${k}" ${el?`style="--c:${ELC[el]}"`:''}>${h}</li>`).join('')}</ul>`;
 }
 function tipHTML(s, ref){
+  const t = T(), ls = locSpell(s), lref = ref ? locSpell(ref) : null;
   const c = (v, rv) => ref && v!==rv ? ' class="chg"' : '';
   const kv = [];
-  kv.push(`<span${c(s.ap,ref&&ref.ap)}>Coût <b>${s.ap} PA</b></span>`);
-  kv.push(`<span${c(s.cd,ref&&ref.cd)}>${s.cd?`Relance <b>${s.cd}</b>`:'&nbsp;'}</span>`);
-  kv.push(`<span class="full${ref&&range(s)!==range(ref)?' chg':''}">Portée <b>${s.rmin} – ${s.rmax}</b>${s.rmod?' (modifiable)':''}${s.los?'':' · sans ligne de vue'}${s.line?' · en ligne':''}</span>`);
-  if(s.mt||s.mtg){ kv.push(`<span${c(s.mt,ref&&ref.mt)}>${s.mt?`Lancers par tour <b>${s.mt}</b>`:''}</span>`); kv.push(`<span${c(s.mtg,ref&&ref.mtg)}>${s.mtg?`Par cible <b>${s.mtg}</b>`:''}</span>`); }
-  if(s.crit) kv.push(`<span>Critique <b>${s.crit}%</b></span>`);
-  if(s.stack>0) kv.push(`<span>Cumul max <b>${s.stack}</b></span>`);
-  const sub = ref ? `<span class="rank">Variante de ${esc(ref.name)}</span>` : '';
-  return `<div class="tip-head"><span class="ico"><img src="${s.img}" alt=""></span><div><h3>${esc(s.name)}</h3>${sub}</div></div>
+  kv.push(`<span${c(s.ap,ref&&ref.ap)}>${t.cost} <b>${s.ap} ${t.ap}</b></span>`);
+  kv.push(`<span${c(s.cd,ref&&ref.cd)}>${s.cd?`${t.cooldown} <b>${s.cd}</b>`:'&nbsp;'}</span>`);
+  kv.push(`<span class="full${ref&&range(s)!==range(ref)?' chg':''}">${t.range} <b>${s.rmin} – ${s.rmax}</b>${s.rmod?t.mod:''}${s.los?'':t.noLosLong}${s.line?t.lineCast:''}</span>`);
+  if(s.mt||s.mtg){ kv.push(`<span${c(s.mt,ref&&ref.mt)}>${s.mt?`${t.perTurnLong} <b>${s.mt}</b>`:''}</span>`); kv.push(`<span${c(s.mtg,ref&&ref.mtg)}>${s.mtg?`${t.perTarget} <b>${s.mtg}</b>`:''}</span>`); }
+  if(s.crit) kv.push(`<span>${t.crit} <b>${s.crit}%</b></span>`);
+  if(s.stack>0) kv.push(`<span>${t.stack} <b>${s.stack}</b></span>`);
+  const sub = lref ? `<span class="rank">${esc(t.variantOf(lref.name))}</span>` : '';
+  return `<div class="tip-head"><span class="ico"><img src="${s.img}" alt=""></span><div><h3>${esc(ls.name)}</h3>${sub}</div></div>
     <div class="tip-sec"><div class="kv">${kv.join('')}</div></div>
-    ${s.desc?`<div class="tip-sec"><p class="desc">${esc(s.desc)}</p></div>`:''}
-    ${s.fx.length?`<div class="tip-h">EFFETS</div>${fxList(s.fx)}`:''}
-    ${s.cfx.length?`<div class="tip-h">EFFETS CRITIQUES</div>${fxList(s.cfx)}`:''}
-    <div class="tip-foot">${state.pin? 'Clic pour fermer' : 'Clic pour épingler'}</div>`;
+    ${ls.desc?`<div class="tip-sec"><p class="desc">${esc(ls.desc)}</p></div>`:''}
+    ${ls.fx.length?`<div class="tip-h">${t.effects}</div>${fxList(ls.fx)}`:''}
+    ${ls.cfx.length?`<div class="tip-h">${t.critEffects}</div>${fxList(ls.cfx)}`:''}
+    <div class="tip-foot">${state.pin? t.unpin : t.pin}</div>`;
 }
 const tip = document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
 function showTip(el){
@@ -446,26 +530,29 @@ document.addEventListener('mouseover', e=>{
 document.getElementById('list').addEventListener('scroll', ()=>{ if(!state.pin) tip.classList.remove('on'); });
 
 function renderClasses(){
+  const t = T();
   document.getElementById('classGrid').innerHTML = BREEDS.map((b,i)=>{
-    const h = hits(b), on = !!state.q.trim();
-      return `<button class="cls ${on&&!h?'none':''}" data-b="${i}" aria-pressed="${i===state.b}" title="${esc(b.name)}${on?` — ${h} sort${h>1?'s':''}`:''}"><img src="${b.img}" alt="${esc(b.name)}">${on&&h?`<span class="hit">${h}</span>`:''}</button>`; }).join('');
-  document.getElementById('className').textContent = breed().name;
+    const bName = locBreed(b), h = hits(b), on = !!state.q.trim();
+      return `<button class="cls ${on&&!h?'none':''}" data-b="${i}" aria-pressed="${i===state.b}" title="${esc(on? t.spellCount(bName, h) : bName)}"><img src="${b.img}" alt="${esc(bName)}">${on&&h?`<span class="hit">${h}</span>`:''}</button>`; }).join('');
+  document.getElementById('className').textContent = locBreed(breed());
 }
 
 function renderFilters(rowsShown){
+  const t = T();
   const all = breed().pairs.flatMap(p=>[p.a,p.b]);
   const els = ['Feu','Eau','Air','Terre','Multi','Utilitaire'].filter(e=>all.some(s=>s.el===e));
-  const fxs = [...new Set(all.flatMap(s=>s.tags))].sort((a,b)=>a.localeCompare(b,'fr'));
-  const count = filtering()? `<button data-reset>Effacer les filtres</button>` : '';
+  const fxs = [...new Set(all.flatMap(s=>s.tags))].sort((a,b)=>tagLabel(a).localeCompare(tagLabel(b), state.lang));
+  const count = filtering()? `<button data-reset>${t.clearFilters}</button>` : '';
   document.getElementById('chips').innerHTML =
     els.map(e=>`<button class="chip" data-el="${e}" aria-pressed="${state.el===e}"><span class="dot" style="--c:${elColor(e)}"></span>${elLabel(e)}</button>`).join('') +
     `<span class="count">${count}</span>`;
   const fx = document.getElementById('fx');
   fx.className = 'effect'+(state.fx?' active':'');
-  fx.innerHTML = `<option value="">Effet</option>${fxs.map(f=>`<option ${f===state.fx?'selected':''}>${esc(f)}</option>`).join('')}`;
+  fx.innerHTML = `<option value="">${t.effect}</option>${fxs.map(f=>`<option value="${esc(f)}"${f===state.fx?' selected':''}>${esc(tagLabel(f))}</option>`).join('')}`;
 }
 
 function renderList(){
+  const t = T();
   const pairs = breed().pairs;
   const all = pairs.flatMap(p=>[p.a,p.b]);
   if(state.el!=='Tous' && !all.some(s=>s.el===state.el)) state.el='Tous';
@@ -475,12 +562,12 @@ function renderList(){
   const L = document.getElementById('list');
   if(!rows.length){
     const others = state.q.trim() ? BREEDS.map((b,i)=>({b,i,h:hits(b)})).filter(o=>o.h && o.i!==state.b) : [];
-    L.innerHTML = `<div class="empty"><b>Aucun sort chez ${esc(breed().name)}</b>${others.length
-      ? `Présent chez :<div class="elsewhere">${others.map(o=>`<button data-b="${o.i}"><img src="${o.b.img}" alt="">${esc(o.b.name)} <span>${o.h}</span></button>`).join('')}</div>`
-      : 'Essayez un autre mot ou retirez un filtre.'}</div>`;
+    L.innerHTML = `<div class="empty"><b>${esc(t.empty(locBreed(breed())))}</b>${others.length
+      ? `${t.elsewhere}<div class="elsewhere">${others.map(o=>`<button data-b="${o.i}"><img src="${o.b.img}" alt="">${esc(locBreed(o.b))} <span>${o.h}</span></button>`).join('')}</div>`
+      : t.emptyHint}</div>`;
     return;
   }
-  L.innerHTML = `<div class="cols"><span>SORT</span><span>VARIANTE</span><span class="x">SORT</span><span class="x">VARIANTE</span></div><div class="pairs">` + rows.map(({p,i})=>`
+  L.innerHTML = `<div class="cols"><span>${t.spellCol}</span><span>${t.variantCol}</span><span class="x">${t.spellCol}</span><span class="x">${t.variantCol}</span></div><div class="pairs">` + rows.map(({p,i})=>`
     <article class="pair">
       ${spellHTML(p.a,`${state.b}-${i}-a`)}
       ${spellHTML(p.b,`${state.b}-${i}-b`,p.a)}
@@ -496,6 +583,18 @@ function setBreed(i){
 /* ---------- Interactions ---------- */
 const q = document.getElementById('q'), searchWrap = document.getElementById('searchWrap');
 document.addEventListener('click', e=>{
+  const langBtn = e.target.closest('#langSwitch [data-lang]');
+  if(langBtn){
+    const next = langBtn.dataset.lang;
+    if(next && next !== state.lang){
+      state.lang = next;
+      try{ localStorage.setItem('grimoire-lang', next); }catch(_){}
+      unpin();
+      applyStaticI18n();
+      render();
+    }
+    return;
+  }
   const sp = e.target.closest('.spell[data-key]');
   if(sp){ const k = sp.dataset.key; const was = state.pin===k; unpin(); if(!was){ state.pin=k; sp.classList.add('pinned'); } showTip(sp); return; }
   if(state.pin && !e.target.closest('.tip')) unpin();
@@ -648,6 +747,7 @@ document.addEventListener('keydown', e=>{
   // appelé par Qt quand la fenêtre réapparaît
   window.playOpen = ()=>{ win.classList.remove('anim-in'); void win.offsetWidth; win.classList.add('anim-in'); setTimeout(()=>win.classList.remove('anim-in'), 260); };
 })();
+applyStaticI18n();
 render();
 </script>
 </body>

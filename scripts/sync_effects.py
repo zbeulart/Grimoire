@@ -46,7 +46,12 @@ def all_effects(level: dict) -> list[dict]:
     return list(level.get("effects", [])) + list(level.get("criticalEffect", []))
 
 
-def build_catalog(client: httpx.Client, spell_ids: set[int]) -> EffectCatalog:
+def _pick_name(obj: dict, lang: str) -> str:
+    names = obj.get("name") or {}
+    return names.get(lang) or names.get("fr") or names.get("en") or ""
+
+
+def build_catalog(client: httpx.Client, spell_ids: set[int]) -> tuple[EffectCatalog, dict[int, dict], dict[int, dict]]:
     catalog = EffectCatalog()
     todo = set(spell_ids)
     for depth in range(MAX_DEPTH):
@@ -78,14 +83,32 @@ def build_catalog(client: httpx.Client, spell_ids: set[int]) -> EffectCatalog:
                 state_ids.add(int(e["value"]))
             if int(e["effectId"]) in (181, 1008, 1011, 405, 2796, 1097):
                 monster_ids.add(int(e["diceNum"]))
-    catalog.states = {i: (o.get("name") or {}).get("fr", "") for i, o in fetch_by_ids(client, "spell-states", state_ids).items()}
-    catalog.monsters = {i: (o.get("name") or {}).get("fr", "") for i, o in fetch_by_ids(client, "monsters", monster_ids).items()}
-    return catalog
+    raw_states = fetch_by_ids(client, "spell-states", state_ids)
+    raw_monsters = fetch_by_ids(client, "monsters", monster_ids)
+    catalog.states = {i: _pick_name(o, "fr") for i, o in raw_states.items()}
+    catalog.monsters = {i: _pick_name(o, "fr") for i, o in raw_monsters.items()}
+    return catalog, raw_states, raw_monsters
+
+
+def build_payload(
+    catalog: EffectCatalog,
+    raw_states: dict[int, dict],
+    raw_monsters: dict[int, dict],
+    spell_ids: set[int],
+    lang: str,
+) -> dict:
+    catalog.states = {i: _pick_name(o, lang) for i, o in raw_states.items()}
+    catalog.monsters = {i: _pick_name(o, lang) for i, o in raw_monsters.items()}
+    return {
+        "source": "DofusDB (https://dofusdb.fr)",
+        "lang": lang,
+        "synced_at": datetime.now(timezone.utc).isoformat(),
+        "spells": {str(sid): spell_tooltip_data(sid, catalog, lang=lang) for sid in sorted(spell_ids)},
+    }
 
 
 def main() -> None:
     spells_path = ROOT / "data" / "spells_fr.json"
-    out_path = ROOT / "data" / "spell_effects_fr.json"
     dataset = json.loads(spells_path.read_text(encoding="utf-8"))
     spell_ids = {
         int(sp["id"])
@@ -96,15 +119,13 @@ def main() -> None:
     }
     print(f"Récupération des effets de {len(spell_ids)} sorts...")
     with httpx.Client(timeout=30.0, headers=HEADERS, follow_redirects=True) as client:
-        catalog = build_catalog(client, spell_ids)
+        catalog, raw_states, raw_monsters = build_catalog(client, spell_ids)
 
-    payload = {
-        "source": "DofusDB (https://dofusdb.fr)",
-        "synced_at": datetime.now(timezone.utc).isoformat(),
-        "spells": {str(sid): spell_tooltip_data(sid, catalog) for sid in sorted(spell_ids)},
-    }
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"Sauvegardé : {out_path}")
+    for lang in ("fr", "en"):
+        payload = build_payload(catalog, raw_states, raw_monsters, spell_ids, lang)
+        out_path = ROOT / "data" / f"spell_effects_{lang}.json"
+        out_path.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        print(f"Sauvegardé : {out_path}")
 
 
 if __name__ == "__main__":

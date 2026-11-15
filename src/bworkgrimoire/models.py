@@ -63,7 +63,7 @@ TACTICAL_RULES: dict[str, tuple[str, ...]] = {
 
 def clean_description(text: str) -> str:
     """Nettoie les balises internes Dofus ({{spell,...}}, <sprite>, <color>) pour l'affichage."""
-    cleaned = SPELL_LINK_RE.sub(r"\1", text)
+    cleaned = SPELL_LINK_RE.sub(r"\1", text.replace("\xa0", " "))
     cleaned = SPRITE_RE.sub(lambda m: f"[{m.group(1).capitalize()}]", cleaned)
     cleaned = HTML_TAG_RE.sub("", cleaned)
     return re.sub(r"[ \t]{2,}", " ", cleaned).strip()

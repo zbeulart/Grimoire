@@ -26,9 +26,9 @@ _SPRITE_TURN_RE = re.compile(r'&lt;sprite name="tour"&gt;')
 _SPRITE_RE = re.compile(r"&lt;sprite[^&]*&gt;")
 
 
-def _fr(mapping: object) -> str:
+def _pick(mapping: object, lang: str = "fr") -> str:
     if isinstance(mapping, dict):
-        return mapping.get("fr") or ""
+        return mapping.get(lang) or mapping.get("fr") or mapping.get("en") or ""
     return mapping if isinstance(mapping, str) else ""
 
 
@@ -42,9 +42,9 @@ class EffectCatalog:
     states: dict[int, str] = field(default_factory=dict)  # id -> nom d'état
     monsters: dict[int, str] = field(default_factory=dict)  # id -> nom d'invocation
 
-    def spell_name(self, spell_id: int) -> str:
+    def spell_name(self, spell_id: int, lang: str = "fr") -> str:
         spell = self.spells.get(int(spell_id))
-        return _fr(spell.get("name")) if spell else ""
+        return _pick(spell.get("name"), lang) if spell else ""
 
     def top_level(self, spell_id: int) -> dict | None:
         spell = self.spells.get(int(spell_id))
@@ -52,17 +52,17 @@ class EffectCatalog:
             return None
         return self.levels.get(int(max(spell["spellLevels"])))
 
-    def template(self, effect_id: int) -> str:
+    def template(self, effect_id: int, lang: str = "fr") -> str:
         definition = self.effects.get(int(effect_id)) or {}
-        return _fr(definition.get("description"))
+        return _pick(definition.get("description"), lang)
 
 
-def format_effect(effect: dict, catalog: EffectCatalog) -> list[str] | None:
+def format_effect(effect: dict, catalog: EffectCatalog, lang: str = "fr") -> list[str] | None:
     """Rend un effet de sort en ``[html, kind, element]`` (None si définition inconnue)."""
     definition = catalog.effects.get(int(effect["effectId"]))
     if not definition:
         return None
-    tpl = _fr(definition.get("description"))
+    tpl = _pick(definition.get("description"), lang).replace("\xa0", " ")
     p1, p2, p3 = int(effect.get("diceNum", 0)), int(effect.get("diceSide", 0)), int(effect.get("value", 0))
     eid = int(effect["effectId"])
     show_max = p2 > 0 and p2 > p1
@@ -84,12 +84,12 @@ def format_effect(effect: dict, catalog: EffectCatalog) -> list[str] | None:
     elif eid in SUMMON_EFFECTS:
         text = text.replace("#1", name_tag(catalog.monsters.get(p1, "?")))
         kind = "sum"
-    elif tpl.startswith("#1 :"):
-        name = catalog.spell_name(p1)
+    elif tpl.startswith("#1 :") or tpl.startswith("#1:"):
+        name = catalog.spell_name(p1, lang=lang)
         text = text.replace("#1", name_tag(name) if name else "", 1).lstrip(" :")
         text = text.replace("#3", f"<b>{p3}</b>")
-    elif "#2" in tpl and "sort" in tpl and p2 == 0:
-        text = text.replace("#2", name_tag(catalog.spell_name(p3) or str(p3)))
+    elif "#1" not in tpl and "#2" in tpl and p2 == 0 and p3 > 0:
+        text = text.replace("#2", name_tag(catalog.spell_name(p3, lang=lang) or str(p3)))
     else:
         text = (
             text.replace("#1", f"<b>{p1}</b>")
@@ -101,9 +101,11 @@ def format_effect(effect: dict, catalog: EffectCatalog) -> list[str] | None:
     low = tpl.lower()
     element_id = int(definition.get("elementId", -1))
     if not kind:
-        if ("dommages" in low and element_id >= 0) or " vol " in f" {low}":
+        if element_id >= 0 and (
+            "dommages" in low or "damage" in low or "steal" in low or " vol " in f" {low}"
+        ):
             kind = "dmg"
-        elif "soin" in low and element_id >= 0:
+        elif element_id >= 0 and ("soin" in low or "heal" in low):
             kind = "heal"
         elif text.startswith("-"):
             kind = "neg"
@@ -112,37 +114,44 @@ def format_effect(effect: dict, catalog: EffectCatalog) -> list[str] | None:
     if duration > 0:
         text += f' <span class="dur">– {duration}{TURN_ICON}</span>'
     elif duration < 0:
-        text += ' <span class="dur">(infini)</span>'
+        inf = "infinite" if lang == "en" else "infini"
+        text += f' <span class="dur">({inf})</span>'
 
     element = EFFECT_ELEMENTS.get(element_id, "") if kind in ("dmg", "heal") else ""
     return [text, kind, element]
 
 
-def spell_effects(spell_id: int, catalog: EffectCatalog, critical: bool = False, depth: int = 0) -> list[list[str]]:
+def spell_effects(
+    spell_id: int,
+    catalog: EffectCatalog,
+    critical: bool = False,
+    depth: int = 0,
+    lang: str = "fr",
+) -> list[list[str]]:
     """Effets visibles d'un sort (niveau maximal), sous-sorts lancés inclus."""
     level = catalog.top_level(spell_id)
     if not level or level.get("hideEffects"):
         return []
     lines: list[list[str]] = []
     for effect in level.get("criticalEffect" if critical else "effects", []):
-        tpl = catalog.template(effect["effectId"]).strip()
+        tpl = catalog.template(effect["effectId"], lang="fr").strip()
         if tpl == "#1":  # « lance un sort » : on affiche les effets du sous-sort
             if effect.get("visibleInTooltip") and depth < MAX_SUBSPELL_DEPTH:
-                lines += spell_effects(effect["diceNum"], catalog, critical, depth + 1)
+                lines += spell_effects(effect["diceNum"], catalog, critical, depth + 1, lang=lang)
             continue
         if not effect.get("visibleInTooltip") or int(effect["effectId"]) == NO_EXTRA_EFFECT:
             continue
-        rendered = format_effect(effect, catalog)
+        rendered = format_effect(effect, catalog, lang=lang)
         if rendered and rendered[0]:
             lines.append(rendered)
     return lines
 
 
-def spell_tooltip_data(spell_id: int, catalog: EffectCatalog) -> dict:
+def spell_tooltip_data(spell_id: int, catalog: EffectCatalog, lang: str = "fr") -> dict:
     """Données d'infobulle d'un sort : effets normaux/critiques, cumul max et rang."""
     level = catalog.top_level(spell_id) or {}
-    fx = spell_effects(spell_id, catalog)
-    cfx = spell_effects(spell_id, catalog, critical=True)
+    fx = spell_effects(spell_id, catalog, lang=lang)
+    cfx = spell_effects(spell_id, catalog, critical=True, lang=lang)
     has_crit = int(level.get("criticalHitProbability", 0)) > 0
     return {
         "fx": fx,

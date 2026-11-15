@@ -14,12 +14,19 @@ def web_dir(data_dir: Path | None = None) -> Path:
     return (data_dir or default_data_dir()) / "web"
 
 
-def load_effects(data_dir: Path | None = None) -> dict[str, dict]:
-    """Charge data/spell_effects_fr.json (effets exacts par id de sort), vide si absent."""
-    path = (data_dir or default_data_dir()) / "spell_effects_fr.json"
+def load_effects(data_dir: Path | None = None, lang: str = "fr") -> dict[str, dict]:
+    """Charge data/spell_effects_<lang>.json (effets exacts par id de sort), vide si absent."""
+    path = (data_dir or default_data_dir()) / f"spell_effects_{lang}.json"
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8")).get("spells", {})
+
+
+def _load_en_pair(data_dir: Path) -> tuple[SpellRepository | None, dict[str, dict]]:
+    en_spells = data_dir / "spells_en.json"
+    if not en_spells.exists():
+        return None, {}
+    return SpellRepository.load_from_files(en_spells), load_effects(data_dir, lang="en")
 
 
 class IconResolver:
@@ -41,9 +48,15 @@ class IconResolver:
         return url
 
 
-def _spell_payload(spell: SpellInfo, effects: dict[str, dict], icon: IconResolver) -> dict:
+def _spell_payload(
+    spell: SpellInfo,
+    effects: dict[str, dict],
+    icon: IconResolver,
+    en_spell: SpellInfo | None = None,
+    en_effects: dict[str, dict] | None = None,
+) -> dict:
     extra = effects.get(str(spell.id), {})
-    return {
+    data = {
         "name": spell.name,
         "ap": spell.ap_cost,
         "rmin": spell.min_range,
@@ -64,23 +77,56 @@ def _spell_payload(spell: SpellInfo, effects: dict[str, dict], icon: IconResolve
         "fx": extra.get("fx", []),
         "cfx": extra.get("cfx", []),
     }
+    if en_spell is not None:
+        en_extra = (en_effects or {}).get(str(spell.id), {})
+        data["en"] = {
+            "name": en_spell.name,
+            "desc": en_spell.description,
+            "fx": en_extra.get("fx", []),
+            "cfx": en_extra.get("cfx", []),
+        }
+    return data
 
 
 def _sort_key(breed: BreedInfo) -> str:
     return breed.name.replace("É", "E").replace("é", "e")
 
 
-def build_payload(repo: SpellRepository, effects: dict[str, dict], icon: IconResolver) -> dict:
+def build_payload(
+    repo: SpellRepository,
+    effects: dict[str, dict],
+    icon: IconResolver,
+    en_repo: SpellRepository | None = None,
+    en_effects: dict[str, dict] | None = None,
+) -> dict:
     """Données injectées dans la page : classes triées par nom, paires sort/variante."""
+    en_spells = (
+        {
+            sp.id: sp
+            for b in en_repo.breeds
+            for p in b.pairs
+            for sp in (p.primary, p.variant)
+            if sp is not None
+        }
+        if en_repo is not None
+        else {}
+    )
     breeds = []
     for breed in sorted(repo.breeds, key=_sort_key):
         pairs = [
-            {"a": _spell_payload(p.primary, effects, icon), "b": _spell_payload(p.variant, effects, icon)}
+            {
+                "a": _spell_payload(p.primary, effects, icon, en_spells.get(p.primary.id), en_effects),
+                "b": _spell_payload(p.variant, effects, icon, en_spells.get(p.variant.id), en_effects),
+            }
             for p in breed.pairs
             if p.variant is not None
         ]
         if pairs:
-            breeds.append({"name": breed.name, "img": icon(breed.img_url), "pairs": pairs})
+            entry = {"id": breed.id, "name": breed.name, "img": icon(breed.img_url), "pairs": pairs}
+            en_breed = en_repo.get_breed(breed.id) if en_repo is not None else None
+            if en_breed is not None:
+                entry["name_en"] = en_breed.name
+            breeds.append(entry)
     return {"breeds": breeds}
 
 
@@ -100,7 +146,8 @@ def write_page(repo: SpellRepository, out_path: Path, host: str = "qt", data_dir
     folder = web_dir(data_dir)
     template = (folder / "grimoire.html").read_text(encoding="utf-8")
     icon = IconResolver([data_dir / "icons", *(extra_icon_dirs or [])])
-    payload = build_payload(repo, load_effects(data_dir), icon)
+    en_repo, en_effects = _load_en_pair(data_dir)
+    payload = build_payload(repo, load_effects(data_dir), icon, en_repo=en_repo, en_effects=en_effects)
     base_url = folder.resolve().as_uri() + "/"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_page(template, payload, host, base_url), encoding="utf-8")
@@ -124,7 +171,8 @@ def export_web_bundle(repo: SpellRepository, out_dir: Path, data_dir: Path | Non
         shutil.copytree(icons_src, out_dir / "icons", dirs_exist_ok=True)
 
     icon = IconResolver([icons_src], prefix="icons/")
-    payload = build_payload(repo, load_effects(data_dir), icon)
+    en_repo, en_effects = _load_en_pair(data_dir)
+    payload = build_payload(repo, load_effects(data_dir), icon, en_repo=en_repo, en_effects=en_effects)
     index_path = out_dir / "index.html"
     index_path.write_text(render_page(template, payload, host="web", base_url=""), encoding="utf-8")
     return index_path
