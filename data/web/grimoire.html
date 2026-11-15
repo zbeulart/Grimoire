@@ -220,6 +220,9 @@ mark{background:rgba(217,180,107,.28);color:inherit;border-radius:2px;padding:0 
 
 :focus-visible{outline:2px solid rgba(217,180,107,.7);outline-offset:1px}
 html.embed,html.embed body{background:transparent;padding:0;overflow:hidden}
+html.embed .win{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;border-radius:0;box-shadow:none}
+html.embed .widget,html.embed .grip{display:none !important}
+html.embed .titlebar,html.embed .titlebar .book-btn{cursor:default}
 html.qt,html.qt body{background:transparent;padding:0;overflow:hidden}
 html.qt .win{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;box-shadow:none}
 html.qt .widget{display:none !important}
@@ -513,7 +516,7 @@ document.addEventListener('keydown', e=>{
 });
 /* ---------- Redimensionnement (coins bas-droit et haut-gauche) ---------- */
 (function(){
-  if(HOST==='qt') return;
+  if(HOST==='qt' || document.documentElement.classList.contains('embed')) return;
   const win = document.getElementById('win');
   const KEY = 'sorts-concept-rect', MIN_W = 340, MAX_W = 1100, MIN_H = 420, M = 8;
   let rect = null;
@@ -574,7 +577,7 @@ document.addEventListener('keydown', e=>{
 
 /* ---------- Grimoire : ouvrir / refermer ---------- */
 (function(){
-  if(HOST==='qt') return;
+  if(HOST==='qt' || document.documentElement.classList.contains('embed')) return;
   const win = document.getElementById('win'), w = document.getElementById('widget');
   const KEY = 'sorts-concept-book', M = 8, S = 64;
   let st = {closed:false, bx:null, by:null};
