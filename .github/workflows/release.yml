@@ -1,0 +1,77 @@
+name: Release Windows
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" pyinstaller
+
+      - name: Run tests
+        run: pytest
+
+      - name: Sync DofusDB data & icons
+        run: python scripts/sync_dofusdb.py --with-icons
+
+      - name: Sync spell effects (infobulles)
+        run: python scripts/sync_effects.py
+
+      - name: Build Windows binary (--onedir, sans UPX)
+        run: |
+          pyinstaller --noconfirm --windowed --onedir --noupx `
+            --name Grimoire `
+            --icon assets/grimoire.ico `
+            --add-data "data;data" `
+            --collect-all PySide6.QtWebEngineWidgets `
+            --collect-all PySide6.QtWebChannel `
+            main.py
+
+      - name: Build Inno Setup installer
+        shell: pwsh
+        run: |
+          $iscc = @(
+            "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+            "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+            "C:\Program Files\Inno Setup 6\ISCC.exe"
+          ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) {
+            choco install innosetup -y
+            $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          }
+          & $iscc installer/Grimoire.iss
+
+      - name: Package zip and SHA-256
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/Grimoire/* -DestinationPath dist/Grimoire-Windows.zip
+          $setupHash = (Get-FileHash dist/Grimoire-Setup.exe -Algorithm SHA256).Hash.ToLower()
+          $zipHash = (Get-FileHash dist/Grimoire-Windows.zip -Algorithm SHA256).Hash.ToLower()
+          @(
+            "$setupHash  Grimoire-Setup.exe",
+            "$zipHash  Grimoire-Windows.zip"
+          ) | Out-File -Encoding ascii dist/SHA256SUMS.txt
+          Get-Content dist/SHA256SUMS.txt
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Grimoire-Windows
+          path: |
+            dist/Grimoire-Setup.exe
+            dist/Grimoire-Windows.zip
+            dist/SHA256SUMS.txt

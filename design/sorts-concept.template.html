@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorts — concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stage:#0d0b09;
+  --win:#181510;
+  --line:rgba(236,220,190,.08);
+  --line-2:rgba(236,220,190,.14);
+  --text:#efe7d7;
+  --body:#d3cab8;
+  --muted:#a39882;
+  --faint:#6e6555;
+  --gold:#d9b46b;
+  --gold-2:#f0d394;
+  --gold-soft:rgba(217,180,107,.13);
+  --feu:#e06a4c; --eau:#55a9dc; --air:#7cc46d; --terre:#c99550; --multi:#b48cd8; --soutien:#9aa1a8;
+  --r:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:radial-gradient(1200px 700px at 50% 20%,#1c1813 0%,var(--stage) 70%);
+  color:var(--text);
+  font:15px/1.35 "Alegreya Sans",system-ui,sans-serif;
+  font-variant-numeric:lining-nums tabular-nums;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:32px 16px;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+
+/* ---------- Fenêtre ---------- */
+.win{
+  position:fixed;container:win / inline-size;
+  left:var(--x,calc(50vw - 240px));top:var(--y,32px);
+  width:var(--w,480px);height:var(--h,min(860px,calc(100vh - 64px)));
+  background:linear-gradient(180deg,#1d1913 0,var(--win) 180px);
+  border:1px solid rgba(217,180,107,.22);
+  border-radius:14px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,240,210,.07);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.titlebar{position:relative;display:flex;align-items:center;gap:10px;height:50px;padding:0 10px 0 22px}
+.titlebar::after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(217,180,107,.45),transparent)}
+.titlebar h1{flex:1;display:flex;align-items:baseline;gap:9px;min-width:0}
+.book-btn{width:40px;height:32px;display:grid;place-items:center;border-radius:8px;margin-left:-6px;transition:transform .15s,filter .15s}
+.book-btn:hover{transform:translateY(-1px) scale(1.06);filter:drop-shadow(0 0 6px rgba(255,176,46,.45))}
+.book-btn svg{width:36px;height:27px;display:block}
+.titlebar h1{align-items:center !important}
+
+/* ---------- Widget grimoire fermé ---------- */
+.widget{
+  position:fixed;left:var(--bx,24px);top:var(--by,24px);z-index:60;width:64px;height:64px;padding:0;
+  display:none;cursor:pointer;touch-action:none;border-radius:14px;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));transition:transform .15s,filter .15s;
+}
+.widget.on{display:block}
+.widget:hover{transform:translateY(-2px) scale(1.05);filter:drop-shadow(0 8px 18px rgba(0,0,0,.6)) drop-shadow(0 0 10px rgba(255,176,46,.35))}
+.widget.dragging{cursor:grabbing;transform:scale(1.08)}
+.widget svg{width:100%;height:100%;display:block;overflow:visible}
+.widget .glow{animation:gem 2.4s ease-in-out infinite}
+@keyframes gem{50%{opacity:.35}}
+.widget .cover{transform-box:fill-box;transform-origin:left center;transition:transform .22s cubic-bezier(.5,0,.75,0)}
+.widget.opening .cover{transform:scaleX(.05) skewY(-6deg)}
+.widget.pop{animation:pop .22s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.win{transform-origin:0 0}
+.win.anim-in{animation:winIn .22s cubic-bezier(.2,.8,.2,1)}
+.win.anim-out{animation:winIn .16s cubic-bezier(.6,0,.8,.4) reverse forwards}
+.win.closed{display:none}
+@keyframes winIn{from{opacity:0;transform:scale(.18)}to{opacity:1;transform:none}}
+.titlebar .cn{font:700 20px/1 "Alegreya SC",serif;letter-spacing:.04em;color:var(--gold-2);text-shadow:0 1px 12px rgba(217,180,107,.18)}
+.kbd{font:500 11px/1 "Alegreya Sans";color:var(--faint);border:1px solid var(--line-2);border-radius:4px;padding:3px 5px}
+.icon-btn{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.icon-btn svg{width:16px;height:16px}
+
+/* ---------- Classes ---------- */
+.classes{padding:14px 16px 12px}
+.class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px}
+.cls{
+  aspect-ratio:1;border-radius:9px;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.05),rgba(0,0,0,.25));box-shadow:inset 0 0 0 1px var(--line);
+  transition:transform .12s;
+}
+.cls:hover{transform:translateY(-1px)}
+.cls img{width:78%;height:78%;object-fit:contain;opacity:.5;filter:grayscale(.6);transition:opacity .12s,filter .12s}
+.cls:hover img{opacity:1;filter:none}
+.cls[aria-pressed="true"]{background:radial-gradient(circle at 50% 35%,rgba(217,180,107,.28),rgba(217,180,107,.06));box-shadow:inset 0 0 0 1.5px var(--gold),0 0 14px rgba(217,180,107,.22)}
+.cls[aria-pressed="true"] img{opacity:1;filter:none}
+.cls{position:relative}
+.cls .hit{position:absolute;right:-3px;top:-3px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--gold);color:#1a1510;font:700 10.5px/16px "Alegreya Sans";text-align:center}
+.cls.none{opacity:.3}
+
+/* ---------- Recherche + filtres ---------- */
+.filters{padding:0 16px 12px;display:flex;flex-direction:column;gap:9px;border-bottom:1px solid var(--line)}
+.searchrow{display:flex;gap:8px}
+.search{position:relative;display:flex;align-items:center;flex:1}
+.search svg{position:absolute;left:11px;width:15px;height:15px;color:var(--faint);pointer-events:none}
+.search input{
+  width:100%;height:38px;padding:0 36px 0 34px;
+  background:rgba(0,0,0,.28);border:1px solid var(--line-2);border-radius:var(--r);
+  outline:none;font-size:14.5px;
+}
+.search input::placeholder{color:var(--faint)}
+.search input::-webkit-search-cancel-button{display:none;-webkit-appearance:none}
+.search input:focus{border-color:rgba(217,180,107,.55);box-shadow:0 0 0 3px rgba(217,180,107,.10)}
+.search .clear{position:absolute;right:6px;width:26px;height:26px;border-radius:5px;color:var(--muted);display:none}
+.search.has-value .clear{display:grid;place-items:center}
+.effect{
+  appearance:none;height:38px;padding:0 28px 0 11px;border-radius:var(--r);
+  background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23a39882' stroke-width='1.6'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 11px center;
+  border:1px solid var(--line-2);color:var(--muted);font-size:14px;cursor:pointer;outline:none;
+}
+.effect.active{color:var(--text);border-color:rgba(217,180,107,.35);background-color:var(--gold-soft)}
+.effect option{background:#1e1a14;color:var(--text)}
+.chips{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:13px;
+  font-size:13.5px;font-weight:500;color:var(--muted);border:1px solid transparent;
+}
+.chip:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.chip[aria-pressed="true"]{color:var(--text);background:var(--gold-soft);border-color:rgba(217,180,107,.35)}
+.chips .count{margin-left:auto;font-size:12.5px;color:var(--faint);white-space:nowrap}
+.chips .count button{color:var(--gold);margin-left:6px;font-size:12.5px}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--c,var(--soutien))}
+
+/* ---------- Liste des paires (sort | variante) ---------- */
+.list{flex:1;overflow-y:auto;overflow-x:clip;padding:0 10px 14px;scrollbar-width:thin;scrollbar-color:rgba(236,220,190,.16) transparent}
+.list::-webkit-scrollbar{width:8px}.list::-webkit-scrollbar-thumb{background:rgba(236,220,190,.14);border-radius:4px;border:2px solid transparent;background-clip:padding-box}
+.cols,.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.cols{
+  position:sticky;top:0;z-index:2;background:var(--win);
+  padding:11px 0 7px;margin-bottom:4px;
+  font:700 10.5px/1 "Alegreya SC";letter-spacing:.14em;color:var(--faint);
+}
+.cols span{padding:0 6px}
+.cols span + span{padding-left:13px}
+.pair{background:rgba(255,255,255,.022);border-radius:10px;margin-bottom:4px;box-shadow:inset 0 0 0 1px rgba(236,220,190,.04)}
+
+.spell{padding:7px 8px;min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);column-gap:9px;align-items:center;cursor:default;border-radius:7px}
+.spell + .spell{border-left:1px solid var(--line);border-radius:0 10px 10px 0;padding-left:13px;position:relative}
+.spell:first-child{border-radius:10px 0 0 10px}
+.spell + .spell::before{
+  content:"";position:absolute;left:-4px;top:50%;margin-top:-3.5px;width:7px;height:7px;
+  background:#1c1913;border-top:1px solid var(--line-2);border-right:1px solid var(--line-2);transform:rotate(45deg);
+}
+.spell:hover,.spell.pinned{background:rgba(217,180,107,.07)}
+.ico{width:36px;height:36px;border-radius:8px;overflow:hidden;background:#0c0a08;box-shadow:0 1px 3px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.1)}
+.spell:hover .ico,.spell.pinned .ico{box-shadow:0 0 0 1.5px var(--gold)}
+.ico img{width:100%;height:100%;display:block}
+.name{display:block;font-size:14.5px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats{display:flex;align-items:center;flex-wrap:nowrap;overflow:hidden;font-size:12px;color:var(--muted);line-height:1.3;margin-top:1px;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.stats > span{white-space:nowrap;display:inline-flex;align-items:center}
+.stats > span + span::before{content:"·";margin:0 4px;color:var(--faint)}
+.stats .dot{margin-right:5px;width:6px;height:6px}
+.stats .chg{color:var(--gold-2)}
+mark{background:rgba(217,180,107,.28);color:inherit;border-radius:2px;padding:0 1px}
+.spell.miss{opacity:.35}
+.spell > div{min-width:0}
+
+/* ---------- Infobulle (survol) ---------- */
+.tip{
+  position:fixed;z-index:50;width:330px;max-height:calc(100vh - 24px);overflow:hidden auto;
+  background:linear-gradient(180deg,#201b14 0,#15120e 120px);border:1px solid rgba(217,180,107,.25);border-radius:12px;
+  box-shadow:0 22px 60px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.6);font-size:13.5px;line-height:1.4;
+  pointer-events:none;display:none;
+  scrollbar-width:none;
+}
+.tip.on{display:block}
+.tip.pinned{pointer-events:auto;border-color:rgba(217,180,107,.45)}
+.tip-head{position:relative;display:grid;grid-template-columns:44px 1fr;gap:11px;align-items:center;padding:13px 14px 11px}
+.tip-head::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:1px;background:linear-gradient(90deg,rgba(217,180,107,.4),transparent)}
+.tip-head .ico{width:44px;height:44px;box-shadow:0 0 0 1.5px var(--gold),0 2px 8px rgba(0,0,0,.5)}
+.tip-head h3{font:700 17px/1.15 "Alegreya Sans";color:var(--gold-2)}
+.tip-head .rank{display:inline-block;margin-top:3px;font-size:11.5px;color:var(--muted);border:1px solid var(--line-2);border-radius:4px;padding:0 6px}
+.tip-sec{padding:10px 14px}
+.tip-sec + .tip-sec{border-top:1px solid var(--line)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;color:var(--muted);font-size:13px}
+.kv b{color:var(--text);font-weight:700}
+.kv .full{grid-column:1/-1}
+.kv .chg b{color:var(--gold-2)}
+.tip .desc{color:#e3c98f;white-space:pre-line;font-size:13px}
+.tip-h{font:700 11px/1 "Alegreya SC";letter-spacing:.16em;color:var(--gold);padding:9px 14px 7px;background:rgba(217,180,107,.06);border-top:1px solid rgba(217,180,107,.12)}
+.fx{list-style:none;padding:8px 14px 10px;display:flex;flex-direction:column;gap:3px}
+.fx li{position:relative;padding-left:18px;color:var(--text)}
+.fx li::before{content:"";position:absolute;left:3px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.fx li.state::before{border-radius:1px;transform:rotate(45deg);background:var(--gold)}
+.fx li.neg{color:#ef8a7a}
+.fx li.neg::before{background:#ef8a7a}
+.fx li.dmg::before,.fx li.heal::before{background:var(--c)}
+.fx li.heal::before{border-radius:1px}
+.fx b{font-weight:700}
+.fx .nm{color:var(--gold-2)}
+.fx .dur{color:var(--muted)}
+.t{display:inline-block;width:11px;height:11px;margin-left:2px;vertical-align:-1px;border:1.5px solid currentColor;border-radius:50%;position:relative}
+.t::after{content:"";position:absolute;left:3.5px;top:1px;width:1.5px;height:4px;background:currentColor}
+.tip-foot{padding:8px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}
+
+.empty{padding:48px 24px;text-align:center;color:var(--muted);font-size:14px}
+.empty b{display:block;color:var(--text);font-weight:500;margin-bottom:4px}
+.elsewhere{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:12px}
+.elsewhere button{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 4px;border-radius:15px;border:1px solid var(--line-2);color:var(--text);font-size:13.5px}
+.elsewhere button:hover{border-color:rgba(217,180,107,.5);background:var(--gold-soft)}
+.elsewhere img{width:22px;height:22px;object-fit:contain}
+.elsewhere span{color:var(--gold);font-weight:700}
+
+:focus-visible{outline:2px solid rgba(217,180,107,.7);outline-offset:1px}
+
+/* ---------- Redimensionnement ---------- */
+.grip{position:absolute;width:22px;height:22px;cursor:nwse-resize;z-index:5;touch-action:none}
+.grip.br{right:0;bottom:0}
+.grip.tl{left:0;top:0}
+.grip.tl::before{left:5px;top:5px;transform:rotate(180deg)}
+.grip.br::before{right:5px;bottom:5px}
+.grip::before{content:"";position:absolute;width:9px;height:9px;
+  background:linear-gradient(135deg,transparent 45%,var(--faint) 45% 52%,transparent 52% 66%,var(--faint) 66% 73%,transparent 73%);opacity:.8}
+.grip:hover::before{background:linear-gradient(135deg,transparent 45%,var(--gold) 45% 52%,transparent 52% 66%,var(--gold) 66% 73%,transparent 73%)}
+body.resizing{cursor:nwse-resize;user-select:none}
+.cols .x{display:none}
+.role{display:none;font:700 10px/1 "Alegreya SC";letter-spacing:.12em;color:var(--faint);margin-left:6px}
+
+/* Étroit : le sort et sa variante l'un sous l'autre */
+@container win (max-width: 420px){
+  .cols{display:none}
+  .pairs{padding-top:8px}
+  .pair{grid-template-columns:minmax(0,1fr)}
+  .spell + .spell{border-left:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px;padding-left:22px}
+  .spell:first-child{border-radius:10px 10px 0 0}
+  .spell + .spell::before{left:11px;top:-1px;margin-top:0;width:6px;height:12px;background:none;border:0;border-left:1px solid var(--line-2);border-bottom:1px solid var(--line-2);border-bottom-left-radius:4px;transform:none}
+  .role{display:inline}
+  .name{display:flex;align-items:baseline}
+  .name .nt{overflow:hidden;text-overflow:ellipsis}
+}
+/* Large : deux paires par ligne */
+@container win (min-width: 700px){
+  .cols{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:8px}
+  .cols .x{display:block}
+  .pairs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 8px}
+}
+@media (max-width:420px){ .win{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;border-radius:0} .grip{display:none} }
+</style>
+</head>
+<body>
+<div class="win" id="win">
+  <header class="titlebar">
+    <h1><button class="book-btn" id="closeBook" title="Refermer le grimoire" aria-label="Refermer le grimoire"><svg class="bk-open" viewBox="0 0 64 48" aria-hidden="true">
+      <ellipse cx="32" cy="44" rx="27" ry="3" fill="#000" opacity=".35"/>
+      <path d="M3 13Q32 7 61 13V41Q32 35 3 41Z" fill="url(#bkLea)" stroke="#2a1404" stroke-width="1.2"/>
+      <path d="M7 11Q20 6 31 11V38Q20 33 7 37Z" fill="url(#bkPages)"/>
+      <path d="M33 11Q44 6 57 11V37Q44 33 33 38Z" fill="url(#bkPages)"/>
+      <path d="M11 16q9-3 16 0M11 21q9-3 16 0M11 26q9-3 16 0M37 16q9-3 16 0M37 21q9-3 16 0M37 26q9-3 16 0" stroke="#a87b45" stroke-width=".9" fill="none" opacity=".75"/>
+      <path d="M32 11V39" stroke="url(#bkGold)" stroke-width="1.6"/>
+      <circle cx="32" cy="9" r="7" fill="url(#bkGlow)"/>
+      <path d="M32 3.5l1.2 3.3 3.3 1.2-3.3 1.2L32 12.5l-1.2-3.3L27.5 8l3.3-1.2z" fill="#ffe7a3"/>
+      <path d="M3 37v4l5-1M61 37v4l-5-1" fill="none" stroke="url(#bkGold)" stroke-width="2.4" stroke-linecap="round"/>
+    </svg></button><span class="cn" id="className"></span></h1>
+  </header>
+
+  <section class="classes">
+    <div class="class-grid" id="classGrid" role="group" aria-label="Classes"></div>
+  </section>
+
+  <div class="filters">
+    <div class="searchrow">
+      <label class="search" id="searchWrap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input id="q" type="search" placeholder="Chercher : érosion, invocation, pousse…" autocomplete="off" spellcheck="false">
+        <button class="clear" type="button" aria-label="Effacer"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+      </label>
+      <select class="effect" id="fx" aria-label="Effet"></select>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="list" id="list"></div>
+  <div class="grip tl" data-grip="tl" title="Redimensionner"></div>
+  <div class="grip br" data-grip="br" title="Redimensionner"></div>
+</div>
+<svg width="0" height="0" style="position:absolute"><defs>
+      <linearGradient id="bkLea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b47634"/><stop offset=".5" stop-color="#83501f"/><stop offset="1" stop-color="#4c2a0e"/></linearGradient>
+      <linearGradient id="bkSpine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3d2009"/><stop offset="1" stop-color="#6a3c14"/></linearGradient>
+      <linearGradient id="bkGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".45" stop-color="#e7b44a"/><stop offset="1" stop-color="#94600f"/></linearGradient>
+      <linearGradient id="bkPages" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbeac0"/><stop offset="1" stop-color="#d1a76a"/></linearGradient>
+      <radialGradient id="bkGem" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff6cf"/><stop offset=".35" stop-color="#ffbd3d"/><stop offset="1" stop-color="#c2410c"/></radialGradient>
+      <radialGradient id="bkGlow"><stop offset="0" stop-color="#ffb02e" stop-opacity=".75"/><stop offset="1" stop-color="#ffb02e" stop-opacity="0"/></radialGradient>
+    </defs></svg>
+<button class="widget" id="widget" title="Ouvrir le grimoire" aria-label="Ouvrir le grimoire"><svg class="bk" viewBox="0 0 64 64" aria-hidden="true">
+    <ellipse cx="33" cy="57" rx="22" ry="3.5" fill="#000" opacity=".4"/>
+    <rect x="12" y="15" width="44" height="39" rx="4" fill="#2e1806"/>
+    <rect x="12" y="13" width="42" height="38" rx="3" fill="url(#bkPages)"/>
+    <path d="M14 47h40M14 44.5h40M14 42h40" stroke="#b98a4e" stroke-width=".6" opacity=".7"/>
+    <g class="cover">
+      <rect x="7" y="9" width="44" height="40" rx="4" fill="url(#bkLea)" stroke="#2a1404" stroke-width="1.2"/>
+      <rect x="7" y="9" width="8" height="40" rx="3" fill="url(#bkSpine)"/>
+      <path d="M15 9v40" stroke="#e7b44a" stroke-width="1" opacity=".55"/>
+      <rect x="20" y="15" width="25" height="28" rx="2" fill="none" stroke="#e7b44a" stroke-width=".8" opacity=".45"/>
+      <path d="M32.5 20l5 9-5 9-5-9z" fill="none" stroke="#e7b44a" stroke-width="1" opacity=".55"/>
+      <path d="M7 15V12a3 3 0 013-3h4" fill="none" stroke="url(#bkGold)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M44 9h3a4 4 0 014 4v3" fill="none" stroke="url(#bkGold)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M7 43v2a4 4 0 004 4h3" fill="none" stroke="url(#bkGold)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M44 49h3a4 4 0 004-4v-3" fill="none" stroke="url(#bkGold)" stroke-width="3" stroke-linecap="round"/>
+      <rect x="7" y="25.5" width="47" height="7" fill="url(#bkGold)" stroke="#6b4210" stroke-width=".8"/>
+      <circle class="glow" cx="51" cy="29" r="10" fill="url(#bkGlow)"/>
+      <rect x="45.5" y="23.5" width="11" height="11" rx="2.5" fill="url(#bkGold)" stroke="#6b4210" stroke-width=".9"/>
+      <circle cx="51" cy="29" r="3.2" fill="url(#bkGem)"/>
+    </g>
+  </svg></button>
+
+<script>
+const DATA = /*DATA*/null;
+const BREEDS = DATA.breeds;
+
+const EL = {
+  Feu:{c:'var(--feu)'}, Eau:{c:'var(--eau)'}, Air:{c:'var(--air)'}, Terre:{c:'var(--terre)'},
+  Multi:{c:'var(--multi)'}, Utilitaire:{c:'var(--soutien)', label:'Soutien'}
+};
+const elLabel = e => (EL[e]&&EL[e].label)||e;
+const elColor = e => (EL[e]||EL.Utilitaire).c;
+
+const start = Math.max(0, BREEDS.findIndex(b=>b.name==='Eniripsa'));
+const state = { b:start, el:'Tous', fx:'', q:'', pin:null };
+
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const range = s => (s.rmin===s.rmax? `${s.rmax}` : `${s.rmin}–${s.rmax}`) + ' PO';
+const breed = () => BREEDS[state.b];
+
+function hl(text){
+  const q = state.q.trim(); if(!q) return esc(text);
+  const n = norm(text), nq = norm(q); let out='', i=0, j;
+  while((j = n.indexOf(nq, i)) >= 0){ out += esc(text.slice(i,j)) + '<mark>' + esc(text.slice(j,j+q.length)) + '</mark>'; i = j+q.length; }
+  return out + esc(text.slice(i));
+}
+function matches(s){
+  if(state.el!=='Tous' && s.el!==state.el) return false;
+  if(state.fx && !s.tags.includes(state.fx)) return false;
+  const q = norm(state.q.trim());
+  if(q && !idx(s).includes(q)) return false;
+  return true;
+}
+/* Texte cherchable : nom, description, tags et effets exacts (normaux + critiques) */
+function idx(s){
+  if(s._i === undefined){
+    const fx = [...s.fx, ...s.cfx].map(f=>f[0].replace(/<[^>]+>/g,'')).join(' ');
+    s._i = norm([s.name, s.desc, s.tags.join(' '), fx].join(' ')).replace(/&#x27;/g,"'");
+  }
+  return s._i;
+}
+/* Nombre de sorts d'une classe qui contiennent la recherche */
+function hits(b){ const q = norm(state.q.trim()); if(!q) return 0; return b.pairs.reduce((n,p)=>n+(idx(p.a).includes(q)?1:0)+(idx(p.b).includes(q)?1:0),0); }
+const filtering = () => state.el!=='Tous' || state.fx || state.q.trim();
+
+/* Stats d'un sort ; pour la variante, ce qui change par rapport au sort est mis en évidence */
+function stats(s, ref){
+  const c = (v, rv) => ref && v!==rv ? ' class="chg"' : '';
+  const out = [];
+  out.push(`<span${c(s.el, ref&&ref.el)}><span class="dot" style="--c:${elColor(s.el)}"></span>${elLabel(s.el)}</span>`);
+  out.push(`<span${c(s.ap, ref&&ref.ap)}>${s.ap} PA</span>`);
+  out.push(`<span${c(range(s), ref&&range(ref))}>${range(s)}</span>`);
+  if(s.cd || (ref&&ref.cd)) out.push(`<span${c(s.cd, ref&&ref.cd)}>${s.cd? `relance ${s.cd}` : 'sans relance'}</span>`);
+  else if(s.mt) out.push(`<span${c(s.mt, ref&&ref.mt)}>${s.mt}/tour</span>`);
+  if(!s.los || (ref && !ref.los)) out.push(`<span${c(s.los, ref&&ref.los)}>${s.los?'LdV':'sans LdV'}</span>`);
+  return out.join('');
+}
+
+function spellHTML(s, key, ref){
+  const miss = filtering() && !matches(s);
+  return `<div class="spell ${miss?'miss':''} ${state.pin===key?'pinned':''}" data-key="${key}">
+    <span class="ico"><img src="${s.img}" alt="" loading="lazy"></span>
+    <div><span class="name"><span class="nt">${hl(s.name)}</span>${ref?'<span class="role">VARIANTE</span>':''}</span><div class="stats">${stats(s, ref)}</div></div>
+  </div>`;
+}
+
+/* ---------- Infobulle ---------- */
+const ELC = {feu:'var(--feu)',eau:'var(--eau)',air:'var(--air)',terre:'var(--terre)',multi:'var(--multi)',neutre:'var(--soutien)'};
+function spellByKey(key){ const [b,i,k] = key.split('-'); const p = BREEDS[+b].pairs[+i]; return {s:p[k], ref: k==='b'? p.a : null}; }
+function fxList(list){
+  return `<ul class="fx">${list.map(([h,k,el])=>`<li class="${k}" ${el?`style="--c:${ELC[el]}"`:''}>${h}</li>`).join('')}</ul>`;
+}
+function tipHTML(s, ref){
+  const c = (v, rv) => ref && v!==rv ? ' class="chg"' : '';
+  const kv = [];
+  kv.push(`<span${c(s.ap,ref&&ref.ap)}>Coût <b>${s.ap} PA</b></span>`);
+  kv.push(`<span${c(s.cd,ref&&ref.cd)}>${s.cd?`Relance <b>${s.cd}</b>`:'&nbsp;'}</span>`);
+  kv.push(`<span class="full${ref&&range(s)!==range(ref)?' chg':''}">Portée <b>${s.rmin} – ${s.rmax}</b>${s.rmod?' (modifiable)':''}${s.los?'':' · sans ligne de vue'}${s.line?' · en ligne':''}</span>`);
+  if(s.mt||s.mtg){ kv.push(`<span${c(s.mt,ref&&ref.mt)}>${s.mt?`Lancers par tour <b>${s.mt}</b>`:''}</span>`); kv.push(`<span${c(s.mtg,ref&&ref.mtg)}>${s.mtg?`Par cible <b>${s.mtg}</b>`:''}</span>`); }
+  if(s.crit) kv.push(`<span>Critique <b>${s.crit}%</b></span>`);
+  if(s.stack>0) kv.push(`<span>Cumul max <b>${s.stack}</b></span>`);
+  const sub = ref ? `<span class="rank">Variante de ${esc(ref.name)}</span>` : '';
+  return `<div class="tip-head"><span class="ico"><img src="${s.img}" alt=""></span><div><h3>${esc(s.name)}</h3>${sub}</div></div>
+    <div class="tip-sec"><div class="kv">${kv.join('')}</div></div>
+    ${s.desc?`<div class="tip-sec"><p class="desc">${esc(s.desc)}</p></div>`:''}
+    ${s.fx.length?`<div class="tip-h">EFFETS</div>${fxList(s.fx)}`:''}
+    ${s.cfx.length?`<div class="tip-h">EFFETS CRITIQUES</div>${fxList(s.cfx)}`:''}
+    <div class="tip-foot">${state.pin? 'Clic pour fermer' : 'Clic pour épingler'}</div>`;
+}
+const tip = document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+function showTip(el){
+  const {s, ref} = spellByKey(el.dataset.key);
+  tip.innerHTML = tipHTML(s, ref);
+  tip.classList.toggle('pinned', !!state.pin);
+  tip.classList.add('on');
+  const r = el.getBoundingClientRect(), win = document.getElementById('win').getBoundingClientRect();
+  const W = tip.offsetWidth, H = tip.offsetHeight, vw = innerWidth, vh = innerHeight, m = 10;
+  let x;
+  if(win.right + m + W <= vw) x = win.right + m;           // à droite de la fenêtre
+  else if(win.left - m - W >= 0) x = win.left - m - W;     // à gauche
+  else x = el.previousElementSibling ? r.left - W - 6 : r.right + 6; // par-dessus l'autre colonne
+  x = Math.max(m, Math.min(x, vw - W - m));
+  const y = Math.max(m, Math.min(r.top - 8, vh - H - m));
+  tip.style.left = x+'px'; tip.style.top = y+'px';
+}
+function unpin(){ state.pin=null; document.querySelectorAll('.spell.pinned').forEach(x=>x.classList.remove('pinned')); tip.classList.remove('on','pinned'); }
+document.addEventListener('mouseover', e=>{
+  if(state.pin) return;
+  const sp = e.target.closest('.spell[data-key]');
+  if(sp) showTip(sp); else tip.classList.remove('on');
+});
+document.getElementById('list').addEventListener('scroll', ()=>{ if(!state.pin) tip.classList.remove('on'); });
+
+function renderClasses(){
+  document.getElementById('classGrid').innerHTML = BREEDS.map((b,i)=>{
+    const h = hits(b), on = !!state.q.trim();
+      return `<button class="cls ${on&&!h?'none':''}" data-b="${i}" aria-pressed="${i===state.b}" title="${esc(b.name)}${on?` — ${h} sort${h>1?'s':''}`:''}"><img src="${b.img}" alt="${esc(b.name)}">${on&&h?`<span class="hit">${h}</span>`:''}</button>`; }).join('');
+  document.getElementById('className').textContent = breed().name;
+}
+
+function renderFilters(rowsShown){
+  const all = breed().pairs.flatMap(p=>[p.a,p.b]);
+  const els = ['Feu','Eau','Air','Terre','Multi','Utilitaire'].filter(e=>all.some(s=>s.el===e));
+  const fxs = [...new Set(all.flatMap(s=>s.tags))].sort((a,b)=>a.localeCompare(b,'fr'));
+  const count = filtering()? `<button data-reset>Effacer les filtres</button>` : '';
+  document.getElementById('chips').innerHTML =
+    els.map(e=>`<button class="chip" data-el="${e}" aria-pressed="${state.el===e}"><span class="dot" style="--c:${elColor(e)}"></span>${elLabel(e)}</button>`).join('') +
+    `<span class="count">${count}</span>`;
+  const fx = document.getElementById('fx');
+  fx.className = 'effect'+(state.fx?' active':'');
+  fx.innerHTML = `<option value="">Effet</option>${fxs.map(f=>`<option ${f===state.fx?'selected':''}>${esc(f)}</option>`).join('')}`;
+}
+
+function renderList(){
+  const pairs = breed().pairs;
+  const all = pairs.flatMap(p=>[p.a,p.b]);
+  if(state.el!=='Tous' && !all.some(s=>s.el===state.el)) state.el='Tous';
+  if(state.fx && !all.some(s=>s.tags.includes(state.fx))) state.fx='';
+  const rows = pairs.map((p,i)=>({p,i})).filter(({p})=>!filtering()||matches(p.a)||matches(p.b));
+  renderFilters(rows.length);
+  const L = document.getElementById('list');
+  if(!rows.length){
+    const others = state.q.trim() ? BREEDS.map((b,i)=>({b,i,h:hits(b)})).filter(o=>o.h && o.i!==state.b) : [];
+    L.innerHTML = `<div class="empty"><b>Aucun sort chez ${esc(breed().name)}</b>${others.length
+      ? `Présent chez :<div class="elsewhere">${others.map(o=>`<button data-b="${o.i}"><img src="${o.b.img}" alt="">${esc(o.b.name)} <span>${o.h}</span></button>`).join('')}</div>`
+      : 'Essayez un autre mot ou retirez un filtre.'}</div>`;
+    return;
+  }
+  L.innerHTML = `<div class="cols"><span>SORT</span><span>VARIANTE</span><span class="x">SORT</span><span class="x">VARIANTE</span></div><div class="pairs">` + rows.map(({p,i})=>`
+    <article class="pair">
+      ${spellHTML(p.a,`${state.b}-${i}-a`)}
+      ${spellHTML(p.b,`${state.b}-${i}-b`,p.a)}
+    </article>`).join('') + `</div>`;
+}
+
+function render(){ renderClasses(); renderList(); }
+function setBreed(i){
+  state.b = (i + BREEDS.length) % BREEDS.length;
+  render(); document.getElementById('list').scrollTop = 0;
+}
+
+/* ---------- Interactions ---------- */
+const q = document.getElementById('q'), searchWrap = document.getElementById('searchWrap');
+document.addEventListener('click', e=>{
+  const sp = e.target.closest('.spell[data-key]');
+  if(sp){ const k = sp.dataset.key; const was = state.pin===k; unpin(); if(!was){ state.pin=k; sp.classList.add('pinned'); } showTip(sp); return; }
+  if(state.pin && !e.target.closest('.tip')) unpin();
+  const t = e.target.closest('[data-b],[data-el],[data-reset],.clear');
+  if(!t) return;
+  if(t.matches('.clear')){ e.preventDefault(); q.value=''; state.q=''; searchWrap.classList.remove('has-value'); q.focus(); return render(); }
+  if(t.dataset.b) return setBreed(+t.dataset.b);
+  if(t.matches('[data-reset]')){ state.el='Tous'; state.fx=''; q.value=''; state.q=''; searchWrap.classList.remove('has-value'); return render(); }
+  if(t.dataset.el){ state.el = state.el===t.dataset.el? 'Tous' : t.dataset.el; return renderList(); }
+});
+document.addEventListener('change', e=>{ if(e.target.id==='fx'){ state.fx=e.target.value; renderList(); }});
+q.addEventListener('input', ()=>{ state.q=q.value; searchWrap.classList.toggle('has-value', !!q.value); render(); });
+document.addEventListener('keydown', e=>{
+  const typing = document.activeElement===q || document.activeElement.tagName==='SELECT';
+  if(e.key==='/' && !typing){ e.preventDefault(); q.focus(); }
+  if(e.key==='Escape' && state.pin) unpin();
+  if(e.key==='Escape' && document.activeElement===q){ q.value=''; q.dispatchEvent(new Event('input')); q.blur(); }
+});
+/* ---------- Redimensionnement (coins bas-droit et haut-gauche) ---------- */
+(function(){
+  const win = document.getElementById('win');
+  const KEY = 'sorts-concept-rect', MIN_W = 340, MAX_W = 1100, MIN_H = 420, M = 8;
+  let rect = null;
+  function defaults(){ const w = Math.min(480, innerWidth - 2*M), h = Math.min(860, innerHeight - 64); return {x:(innerWidth - w)/2, y:32, w, h}; }
+  function clamp(r){
+    r.w = Math.max(MIN_W, Math.min(MAX_W, r.w, innerWidth - 2*M));
+    r.h = Math.max(MIN_H, Math.min(r.h, innerHeight - 2*M));
+    r.x = Math.max(M, Math.min(r.x, innerWidth - r.w - M));
+    r.y = Math.max(M, Math.min(r.y, innerHeight - r.h - M));
+    return r;
+  }
+  function apply(r){
+    rect = clamp(r);
+    for(const k of ['x','y','w','h']) win.style.setProperty('--'+k, Math.round(rect[k])+'px');
+  }
+  try { const s = JSON.parse(localStorage.getItem(KEY)||'null'); apply(s && s.w ? s : defaults()); } catch(_){ apply(defaults()); }
+  let drag = null;
+  document.querySelectorAll('[data-grip]').forEach(g=>{
+    g.addEventListener('pointerdown', e=>{
+      e.preventDefault(); g.setPointerCapture(e.pointerId);
+      drag = {corner:g.dataset.grip, x:e.clientX, y:e.clientY, r:{...rect}};
+      document.body.classList.add('resizing'); tip.classList.remove('on');
+    });
+    g.addEventListener('pointermove', e=>{
+      if(!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y, r0 = drag.r;
+      if(drag.corner === 'br') return apply({x:r0.x, y:r0.y, w:r0.w + dx, h:r0.h + dy});
+      // haut-gauche : le coin bas-droit reste fixe
+      const right = r0.x + r0.w, bottom = r0.y + r0.h;
+      const w = Math.max(MIN_W, Math.min(MAX_W, r0.w - dx)), h = Math.max(MIN_H, r0.h - dy);
+      apply({x:right - w, y:bottom - h, w, h});
+    });
+    const end = ()=>{ if(!drag) return; drag = null; document.body.classList.remove('resizing');
+      try { localStorage.setItem(KEY, JSON.stringify(rect)); } catch(_){} };
+    g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
+    g.addEventListener('dblclick', ()=>{ apply(defaults()); try{ localStorage.removeItem(KEY); }catch(_){} });
+  });
+  addEventListener('resize', ()=>apply({...rect}));
+  window.WIN = { get: ()=>({...rect}), set: r=>{ apply(r); try{ localStorage.setItem(KEY, JSON.stringify(rect)); }catch(_){} } };
+})();
+
+/* ---------- Grimoire : ouvrir / refermer ---------- */
+(function(){
+  const win = document.getElementById('win'), w = document.getElementById('widget');
+  const KEY = 'sorts-concept-book', M = 8, S = 64;
+  let st = {closed:false, bx:null, by:null};
+  try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY)||'{}')); } catch(_){}
+  const save = ()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(_){} };
+  function place(x, y){
+    st.bx = Math.max(M, Math.min(x, innerWidth - S - M));
+    st.by = Math.max(M, Math.min(y, innerHeight - S - M));
+    w.style.setProperty('--bx', st.bx+'px'); w.style.setProperty('--by', st.by+'px');
+  }
+  let busy = false;
+  const lock = ms=>{ busy = true; setTimeout(()=>busy=false, ms); };
+  function close(){
+    if(busy) return; lock(320);
+    const r = WIN.get(); place(r.x, r.y);
+    tip.classList.remove('on','pinned'); state.pin = null;
+    win.classList.remove('anim-in'); win.classList.add('anim-out');
+    setTimeout(()=>{ win.classList.add('closed'); win.classList.remove('anim-out');
+      w.classList.remove('opening'); w.classList.add('on','pop'); setTimeout(()=>w.classList.remove('pop'), 250); }, 150);
+    st.closed = true; save();
+  }
+  function open(){
+    if(busy) return; lock(480);
+    w.classList.add('opening');                       // la couverture se rabat
+    setTimeout(()=>{
+      const r = WIN.get(); WIN.set({...r, x:st.bx, y:st.by});
+      w.classList.remove('on','opening');
+      win.classList.remove('closed'); win.classList.add('anim-in');
+      setTimeout(()=>win.classList.remove('anim-in'), 260);
+    }, 200);
+    st.closed = false; save();
+  }
+  document.getElementById('closeBook').addEventListener('click', e=>{ e.stopPropagation(); close(); });
+  // widget : clic = ouvrir, glisser = déplacer
+  let d = null;
+  w.addEventListener('pointerdown', e=>{ w.setPointerCapture(e.pointerId); d = {x:e.clientX, y:e.clientY, bx:st.bx, by:st.by, moved:false}; });
+  w.addEventListener('pointermove', e=>{
+    if(!d) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if(!d.moved && Math.hypot(dx, dy) < 4) return;
+    d.moved = true; w.classList.add('dragging'); place(d.bx + dx, d.by + dy);
+  });
+  w.addEventListener('pointerup', ()=>{ if(!d) return; const moved = d.moved; d = null; w.classList.remove('dragging'); if(moved) save(); else open(); });
+  w.addEventListener('pointercancel', ()=>{ d = null; w.classList.remove('dragging'); });
+  addEventListener('resize', ()=>{ if(st.bx!=null) place(st.bx, st.by); });
+  if(st.closed){ place(st.bx ?? WIN.get().x, st.by ?? WIN.get().y); win.classList.add('closed'); w.classList.add('on'); }
+})();
+render();
+</script>
+</body>
+</html>

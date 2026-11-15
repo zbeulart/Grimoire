@@ -1,0 +1,21 @@
+{
+  "1": "Protecteur à glyphes et armures : réduit énormément les dégâts (Rempart, Bastion, Barricade) et contrôle le terrain avec ses glyphes d'entrave ou de dégâts.",
+  "2": "Invocateur par charges élémentaires : accumule des charges (Tofu/Air, Bouftou/Terre, Dragonnet/Feu, Crapaud/Eau) pour invoquer et se transformer.",
+  "3": "Contrôle de distance & retrait PM : ralentit les ennemis, manipule ses coffres/pelles/sacs animés et offre du soin/débuff utilitaire.",
+  "4": "Pièges, poisons et invisibilité : pose des réseaux de pièges mortels pour déclencher des chaînes de dégâts et peut devenir invisible.",
+  "5": "Manipulateur temporel : génère des états Téléfrag en échangeant de position avec ses cibles pour débloquer des PA bonus et des combos de placement.",
+  "6": "Parieur aux cartes : pioche et consomme des cartes élémentaires/suites pour se booster (critiques, puissance, soins) et s'adapter chaque tour.",
+  "7": "Soigneur & soutien polyvalent : pose l'état Stimulé (+PA), soigne en zone ou via fiole/lapino et peut aussi taper fort en Feu/Eau/Air.",
+  "8": "Bourrin mêlée à gros burst : charge ses gros sorts (Colère de Iop, Destin) et booste énormément les dommages de son équipe.",
+  "9": "Tireur longue distance : accumule ses tirs précis, profite de la portée modifiable et maintient les ennemis loin à coups de retrait PM et de repousse.",
+  "10": "Contrôle de masse par invocations : propage l'état Infecté via ses arbres et poupées (Folle, Gonflable, Bloqueuse) pour frapper ou entraver tout le monde.",
+  "11": "Berserker mêlée : devient plus résistant et tape plus fort à mesure que ses PV baissent (Souffrance), avec du vol de vie et des sacrifices.",
+  "12": "Placeur roi du jeu : porte et jette alliés comme ennemis (Karcham/Chamrak), pose le Tonneau et encaisse via l'état Saoul/Sobre.",
+  "13": "Poseur de bombes : place et fait monter ses bombes élémentaires pour créer des murs ou des explosions massives en fin de combo.",
+  "14": "Duelliste à masques : change de masque (Psychopathe, Pleutre, Classe) pour alterner gros boucliers d'équipe, poussées et dégâts mêlée.",
+  "15": "Ingénieur à tourelles : évolue ses tourelles (Harponneuse, Gardienne, Tactirelle, Chalutier, Foreuse) pour soigner, taper ou déplacer.",
+  "16": "Maître des portails : crée des réseaux de portails qui amplifient les dégâts et permettent de frapper ou soigner à l'autre bout de la map.",
+  "17": "Mage multi-éléments : combine deux éléments sur une cible (état Élémentaire) pour déclencher des effets bonus (retrait PA, vol de vie, érosion, shield).",
+  "18": "Chasseur mêlée à Rage : monte sa jauge de Rage en encaissant ou tapant jusqu'à la Forme Bestiale (dégâts + résistance, sorts réduits), et pose Proie (soigne les alliés qui frappent la cible).",
+  "20": "Chevalier à lance : place sa Lance sur le terrain pour changer de zone de sort, repousser en masse et générer de gros boucliers/dégâts à mi-distance."
+}
