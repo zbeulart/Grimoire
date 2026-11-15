@@ -3,7 +3,9 @@
 import json
 
 from bworkgrimoire.effects import EffectCatalog, format_effect, spell_tooltip_data
-from bworkgrimoire.web_page import IconResolver, render_page
+from bworkgrimoire.models import BreedInfo, SpellInfo, SpellVariantPair
+from bworkgrimoire.repository import SpellRepository
+from bworkgrimoire.web_page import IconResolver, export_web_bundle, render_page
 
 
 def _catalog() -> EffectCatalog:
@@ -71,6 +73,9 @@ def test_icon_resolver_prefers_local_file(tmp_path):
     assert resolve("https://api.dofusdb.fr/img/absent.png") == "https://api.dofusdb.fr/img/absent.png"
     assert resolve("") == ""
 
+    rel_resolve = IconResolver([tmp_path], prefix="icons/")
+    assert rel_resolve("https://api.dofusdb.fr/img/sort_1.png") == "icons/sort_1.png"
+
 
 def test_render_page_injects_data_host_and_channel():
     template = "<!--QWEBCHANNEL--><style>{{WEB_BASE}}f.ttf</style><script>const DATA = /*DATA*/null;HOST=/*HOST*/'web'</script>"
@@ -81,3 +86,39 @@ def test_render_page_injects_data_host_and_channel():
     assert json.dumps(payload, ensure_ascii=False, separators=(",", ":")) in qt
     web = render_page(template, payload, "web", "")
     assert "qwebchannel" not in web and 'HOST="web"' in web
+
+
+def test_export_web_bundle_builds_portable_static_site(tmp_path):
+    data_dir = tmp_path / "data"
+    (data_dir / "web" / "fonts").mkdir(parents=True)
+    (data_dir / "web" / "fonts" / "AlegreyaSans-Regular.ttf").write_bytes(b"ttf")
+    (data_dir / "web" / "book_closed.svg").write_text("<svg/>", encoding="utf-8")
+    (data_dir / "web" / "grimoire.html").write_text(
+        '<link href="{{WEB_BASE}}book_closed.svg"><!--QWEBCHANNEL-->'
+        '<style>{{WEB_BASE}}fonts/AlegreyaSans-Regular.ttf</style>'
+        '<script>const DATA=/*DATA*/null;window.HOST=/*HOST*/\'web\';</script>',
+        encoding="utf-8",
+    )
+    (data_dir / "icons").mkdir(parents=True)
+    (data_dir / "icons" / "s1.png").write_bytes(b"png")
+    (data_dir / "icons" / "s2.png").write_bytes(b"png")
+    (data_dir / "icons" / "cls.png").write_bytes(b"png")
+
+    s1 = SpellInfo.from_dict({"id": 1, "name": "Mot 1", "img_url": "https://ex/s1.png", "element": "Feu"})
+    s2 = SpellInfo.from_dict({"id": 2, "name": "Mot 2", "img_url": "https://ex/s2.png", "element": "Eau"})
+    pair = SpellVariantPair(variant_id=1, primary=s1, variant=s2)
+    repo = SpellRepository([BreedInfo(10, "Éniripsa", "", "https://ex/cls.png", (pair,))])
+
+    out_dir = tmp_path / "web_dist"
+    index_path = export_web_bundle(repo, out_dir, data_dir=data_dir)
+    html = index_path.read_text(encoding="utf-8")
+
+    assert index_path == out_dir / "index.html"
+    assert (out_dir / "fonts" / "AlegreyaSans-Regular.ttf").exists()
+    assert (out_dir / "icons" / "s1.png").exists()
+    assert (out_dir / "book_closed.svg").exists()
+    assert 'HOST="web"' in html
+    assert "qwebchannel" not in html
+    assert "file://" not in html
+    assert "icons/s1.png" in html
+    assert '"fonts/AlegreyaSans-Regular.ttf"' in html or 'fonts/AlegreyaSans-Regular.ttf' in html

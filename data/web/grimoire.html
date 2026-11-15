@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Grimoire</title>
+<link rel="icon" href="{{WEB_BASE}}book_closed.svg" type="image/svg+xml">
 <!--QWEBCHANNEL-->
 <style>
 /* Polices embarquées (SIL OFL, voir fonts/OFL.txt) */
@@ -218,11 +219,13 @@ mark{background:rgba(217,180,107,.28);color:inherit;border-radius:2px;padding:0 
 .elsewhere span{color:var(--gold);font-weight:700}
 
 :focus-visible{outline:2px solid rgba(217,180,107,.7);outline-offset:1px}
+html.embed,html.embed body{background:transparent;padding:0;overflow:hidden}
 html.qt,html.qt body{background:transparent;padding:0;overflow:hidden}
 html.qt .win{left:0 !important;top:0 !important;width:100vw !important;height:100vh !important;box-shadow:none}
 html.qt .widget{display:none !important}
-html.qt .titlebar{cursor:move}
-html.qt .titlebar .book-btn{cursor:pointer}
+.titlebar{cursor:move;touch-action:none}
+.titlebar .book-btn{cursor:pointer}
+body.moving{user-select:none}
 
 /* ---------- Redimensionnement ---------- */
 .grip{position:absolute;width:22px;height:22px;cursor:nwse-resize;z-index:5;touch-action:none}
@@ -328,6 +331,7 @@ body.resizing{cursor:nwse-resize;user-select:none}
 const DATA = /*DATA*/null;
 window.HOST = /*HOST*/'web';
 if(HOST==='qt') document.documentElement.classList.add('qt');
+else if(new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');
 const BREEDS = DATA.breeds;
 
 const EL = {
@@ -549,6 +553,23 @@ document.addEventListener('keydown', e=>{
   });
   addEventListener('resize', ()=>apply({...rect}));
   window.WIN = { get: ()=>({...rect}), set: r=>{ apply(r); try{ localStorage.setItem(KEY, JSON.stringify(rect)); }catch(_){} } };
+
+  const titlebar = document.querySelector('.titlebar');
+  let moveDrag = null;
+  titlebar.addEventListener('pointerdown', e=>{
+    if(e.button !== 0 || e.target.closest('button')) return;
+    e.preventDefault(); titlebar.setPointerCapture(e.pointerId);
+    moveDrag = {x:e.clientX, y:e.clientY, r:{...rect}};
+    document.body.classList.add('moving'); tip.classList.remove('on');
+  });
+  titlebar.addEventListener('pointermove', e=>{
+    if(!moveDrag) return;
+    apply({x:moveDrag.r.x + (e.clientX - moveDrag.x), y:moveDrag.r.y + (e.clientY - moveDrag.y), w:moveDrag.r.w, h:moveDrag.r.h});
+  });
+  const endMove = ()=>{ if(!moveDrag) return; moveDrag = null; document.body.classList.remove('moving');
+    try { localStorage.setItem(KEY, JSON.stringify(rect)); } catch(_){} };
+  titlebar.addEventListener('pointerup', endMove);
+  titlebar.addEventListener('pointercancel', endMove);
 })();
 
 /* ---------- Grimoire : ouvrir / refermer ---------- */

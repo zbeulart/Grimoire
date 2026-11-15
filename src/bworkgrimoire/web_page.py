@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 from bworkgrimoire.models import BreedInfo, SpellInfo
@@ -24,8 +25,9 @@ def load_effects(data_dir: Path | None = None) -> dict[str, dict]:
 class IconResolver:
     """Remplace l'URL distante d'une icône par le fichier local s'il existe (hors-ligne)."""
 
-    def __init__(self, folders: list[Path]) -> None:
+    def __init__(self, folders: list[Path], prefix: str | None = None) -> None:
         self._folders = [f for f in folders if f and f.exists()]
+        self._prefix = prefix
 
     def __call__(self, url: str) -> str:
         if not url:
@@ -35,7 +37,7 @@ class IconResolver:
         for folder in self._folders:
             candidate = folder / safe
             if candidate.exists():
-                return candidate.resolve().as_uri()
+                return f"{self._prefix}{safe}" if self._prefix is not None else candidate.resolve().as_uri()
         return url
 
 
@@ -103,3 +105,26 @@ def write_page(repo: SpellRepository, out_path: Path, host: str = "qt", data_dir
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_page(template, payload, host, base_url), encoding="utf-8")
     return out_path
+
+
+def export_web_bundle(repo: SpellRepository, out_dir: Path, data_dir: Path | None = None) -> Path:
+    """Exporte une version Web statique autonome (index.html + fonts/ + icons/) dans out_dir."""
+    data_dir = data_dir or default_data_dir()
+    folder = web_dir(data_dir)
+    template = (folder / "grimoire.html").read_text(encoding="utf-8")
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(folder / "fonts", out_dir / "fonts", dirs_exist_ok=True)
+    book_svg = folder / "book_closed.svg"
+    if book_svg.exists():
+        shutil.copy2(book_svg, out_dir / "book_closed.svg")
+
+    icons_src = data_dir / "icons"
+    if icons_src.exists():
+        shutil.copytree(icons_src, out_dir / "icons", dirs_exist_ok=True)
+
+    icon = IconResolver([icons_src], prefix="icons/")
+    payload = build_payload(repo, load_effects(data_dir), icon)
+    index_path = out_dir / "index.html"
+    index_path.write_text(render_page(template, payload, host="web", base_url=""), encoding="utf-8")
+    return index_path
