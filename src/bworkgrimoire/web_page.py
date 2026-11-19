@@ -104,7 +104,7 @@ def build_payload(
         {
             sp.id: sp
             for b in en_repo.breeds
-            for p in b.pairs
+            for p in b.pairs + b.auras
             for sp in (p.primary, p.variant)
             if sp is not None
         }
@@ -113,16 +113,22 @@ def build_payload(
     )
     breeds = []
     for breed in sorted(repo.breeds, key=_sort_key):
-        pairs = [
-            {
-                "a": _spell_payload(p.primary, effects, icon, en_spells.get(p.primary.id), en_effects),
-                "b": _spell_payload(p.variant, effects, icon, en_spells.get(p.variant.id), en_effects),
-            }
-            for p in breed.pairs
-            if p.variant is not None
-        ]
+        def two(group: tuple) -> list[dict]:
+            return [
+                {
+                    "a": _spell_payload(p.primary, effects, icon, en_spells.get(p.primary.id), en_effects),
+                    "b": _spell_payload(p.variant, effects, icon, en_spells.get(p.variant.id), en_effects),
+                }
+                for p in group
+                if p.variant is not None
+            ]
+
+        pairs = two(breed.pairs)
         if pairs:
             entry = {"id": breed.id, "name": breed.name, "img": icon(breed.img_url), "pairs": pairs}
+            auras = two(breed.auras)
+            if auras:
+                entry["auras"] = auras
             en_breed = en_repo.get_breed(breed.id) if en_repo is not None else None
             if en_breed is not None:
                 entry["name_en"] = en_breed.name

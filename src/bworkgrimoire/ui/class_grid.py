@@ -1,4 +1,4 @@
-"""Grille d'accueil des 19 classes avec recherche par effet, sort ou catégorie."""
+"""Grille d'accueil des 20 classes avec recherche par effet, sort ou catégorie."""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ HOME_TAGS = (
 
 
 class ClassGridWidget(QWidget):
-    """Affiche les 19 classes cliquables avec recherche et filtres par mécanique."""
+    """Affiche les 20 classes cliquables avec recherche et filtres par mécanique."""
 
     # (breed_id, search_query_to_forward, tag_to_forward)
     breed_selected = Signal(int, str, str)

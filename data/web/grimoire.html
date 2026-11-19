@@ -245,11 +245,14 @@ body.moving{user-select:none}
 .grip:hover::before{background:linear-gradient(135deg,transparent 45%,var(--gold) 45% 52%,transparent 52% 66%,var(--gold) 66% 73%,transparent 73%)}
 body.resizing{cursor:nwse-resize;user-select:none}
 .cols .x{display:none}
+.grp + .grp{margin-top:12px}
 .role{display:none;font:700 10px/1 "Alegreya SC";letter-spacing:.12em;color:var(--faint);margin-left:6px}
 
 /* Étroit : le sort et sa variante l'un sous l'autre */
 @container win (max-width: 420px){
   .cols{display:none}
+  .grp-aura .cols{display:block}
+  .grp-aura .cols span + span{display:none}
   .pairs{padding-top:8px}
   .pair{grid-template-columns:minmax(0,1fr)}
   .spell + .spell{border-left:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px;padding-left:22px}
@@ -353,6 +356,7 @@ const I18N = {
     effect:'Effet', resize:'Redimensionner', ap:'PA', rangeUnit:' PO', noCd:'sans relance',
     cd:n=>`relance ${n}`, perTurn:n=>`${n}/tour`, los:'LdV', noLos:'sans LdV',
     variant:'VARIANTE', variantOf:n=>`Variante de ${n}`, spellCol:'SORT', variantCol:'VARIANTE',
+    auraCol:'BELLAURA', lineageCol:'SORT DE LIGNÉE', lineage:'LIGNÉE', lineageOf:n=>`Sort de lignée de ${n}`,
     cost:'Coût', cooldown:'Relance', range:'Portée', mod:' (modifiable)',
     noLosLong:' · sans ligne de vue', lineCast:' · en ligne', perTurnLong:'Lancers par tour',
     perTarget:'Par cible', crit:'Critique', stack:'Cumul max', effects:'EFFETS',
@@ -368,6 +372,7 @@ const I18N = {
     effect:'Effect', resize:'Resize', ap:'AP', rangeUnit:' Range', noCd:'no CD',
     cd:n=>`CD ${n}`, perTurn:n=>`${n}/turn`, los:'LoS', noLos:'no LoS',
     variant:'VARIANT', variantOf:n=>`Variant of ${n}`, spellCol:'SPELL', variantCol:'VARIANT',
+    auraCol:'BELLAURA', lineageCol:'LINEAGE SPELL', lineage:'LINEAGE', lineageOf:n=>`Lineage spell of ${n}`,
     cost:'Cost', cooldown:'Cooldown', range:'Range', mod:' (modifiable)',
     noLosLong:' · no line of sight', lineCast:' · linear cast', perTurnLong:'Casts per turn',
     perTarget:'Per target', crit:'Critical', stack:'Max stack', effects:'EFFECTS',
@@ -455,7 +460,9 @@ function idx(s){
   return s._i[state.lang];
 }
 /* Nombre de sorts d'une classe qui contiennent la recherche */
-function hits(b){ const q = norm(state.q.trim()); if(!q) return 0; return b.pairs.reduce((n,p)=>n+(idx(p.a).includes(q)?1:0)+(idx(p.b).includes(q)?1:0),0); }
+/* Paires sort/variante puis, pour le Bellaphone, paires Bellaura/sort de lignée */
+const groups = b => [...b.pairs, ...(b.auras||[])];
+function hits(b){ const q = norm(state.q.trim()); if(!q) return 0; return groups(b).reduce((n,p)=>n+(idx(p.a).includes(q)?1:0)+(idx(p.b).includes(q)?1:0),0); }
 const filtering = () => state.el!=='Tous' || state.fx || state.q.trim();
 
 /* Stats d'un sort ; pour la variante, ce qui change par rapport au sort est mis en évidence */
@@ -472,23 +479,30 @@ function stats(s, ref){
   return out.join('');
 }
 
-function spellHTML(s, key, ref){
+function spellHTML(s, key, ref, role){
+  role = role === undefined ? (ref ? T().variant : '') : role;
   const miss = filtering() && !matches(s);
   const ls = locSpell(s);
   return `<div class="spell ${miss?'miss':''} ${state.pin===key?'pinned':''}" data-key="${key}">
     <span class="ico"><img src="${s.img}" alt="" loading="lazy"></span>
-    <div><span class="name"><span class="nt">${hl(ls.name)}</span>${ref?`<span class="role">${T().variant}</span>`:''}</span><div class="stats">${stats(s, ref)}</div></div>
+    <div><span class="name"><span class="nt">${hl(ls.name)}</span>${role?`<span class="role">${role}</span>`:''}</span><div class="stats">${stats(s, ref)}</div></div>
   </div>`;
 }
 
 /* ---------- Infobulle ---------- */
 const ELC = {feu:'var(--feu)',eau:'var(--eau)',air:'var(--air)',terre:'var(--terre)',multi:'var(--multi)',neutre:'var(--soutien)'};
-function spellByKey(key){ const [b,i,k] = key.split('-'); const p = BREEDS[+b].pairs[+i]; return {s:p[k], ref: k==='b'? p.a : null}; }
+/* Clé « classe-rang-a|b » ; rang préfixé « u » pour les Bellauras */
+function spellByKey(key){
+  const [b,i,k] = key.split('-'), aura = i[0]==='u';
+  const p = aura ? BREEDS[+b].auras[+i.slice(1)] : BREEDS[+b].pairs[+i];
+  if(k!=='b') return {s:p.a, ref:null, sub:''};
+  return aura ? {s:p.b, ref:null, sub:T().lineageOf(locSpell(p.a).name)} : {s:p.b, ref:p.a, sub:T().variantOf(locSpell(p.a).name)};
+}
 function fxList(list){
   return `<ul class="fx">${list.map(([h,k,el])=>`<li class="${k}" ${el?`style="--c:${ELC[el]}"`:''}>${h}</li>`).join('')}</ul>`;
 }
-function tipHTML(s, ref){
-  const t = T(), ls = locSpell(s), lref = ref ? locSpell(ref) : null;
+function tipHTML(s, ref, subText){
+  const t = T(), ls = locSpell(s);
   const c = (v, rv) => ref && v!==rv ? ' class="chg"' : '';
   const kv = [];
   kv.push(`<span${c(s.ap,ref&&ref.ap)}>${t.cost} <b>${s.ap} ${t.ap}</b></span>`);
@@ -497,7 +511,7 @@ function tipHTML(s, ref){
   if(s.mt||s.mtg){ kv.push(`<span${c(s.mt,ref&&ref.mt)}>${s.mt?`${t.perTurnLong} <b>${s.mt}</b>`:''}</span>`); kv.push(`<span${c(s.mtg,ref&&ref.mtg)}>${s.mtg?`${t.perTarget} <b>${s.mtg}</b>`:''}</span>`); }
   if(s.crit) kv.push(`<span>${t.crit} <b>${s.crit}%</b></span>`);
   if(s.stack>0) kv.push(`<span>${t.stack} <b>${s.stack}</b></span>`);
-  const sub = lref ? `<span class="rank">${esc(t.variantOf(lref.name))}</span>` : '';
+  const sub = subText ? `<span class="rank">${esc(subText)}</span>` : '';
   return `<div class="tip-head"><span class="ico"><img src="${s.img}" alt=""></span><div><h3>${esc(ls.name)}</h3>${sub}</div></div>
     <div class="tip-sec"><div class="kv">${kv.join('')}</div></div>
     ${ls.desc?`<div class="tip-sec"><p class="desc">${esc(ls.desc)}</p></div>`:''}
@@ -507,8 +521,8 @@ function tipHTML(s, ref){
 }
 const tip = document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
 function showTip(el){
-  const {s, ref} = spellByKey(el.dataset.key);
-  tip.innerHTML = tipHTML(s, ref);
+  const {s, ref, sub} = spellByKey(el.dataset.key);
+  tip.innerHTML = tipHTML(s, ref, sub);
   tip.classList.toggle('pinned', !!state.pin);
   tip.classList.add('on');
   const r = el.getBoundingClientRect(), win = document.getElementById('win').getBoundingClientRect();
@@ -539,7 +553,7 @@ function renderClasses(){
 
 function renderFilters(rowsShown){
   const t = T();
-  const all = breed().pairs.flatMap(p=>[p.a,p.b]);
+  const all = groups(breed()).flatMap(p=>[p.a,p.b]);
   const els = ['Feu','Eau','Air','Terre','Multi','Utilitaire'].filter(e=>all.some(s=>s.el===e));
   const fxs = [...new Set(all.flatMap(s=>s.tags))].sort((a,b)=>tagLabel(a).localeCompare(tagLabel(b), state.lang));
   const count = filtering()? `<button data-reset>${t.clearFilters}</button>` : '';
@@ -553,25 +567,34 @@ function renderFilters(rowsShown){
 
 function renderList(){
   const t = T();
-  const pairs = breed().pairs;
-  const all = pairs.flatMap(p=>[p.a,p.b]);
+  const pairs = breed().pairs, auras = breed().auras || [];
+  const all = groups(breed()).flatMap(p=>[p.a,p.b]);
   if(state.el!=='Tous' && !all.some(s=>s.el===state.el)) state.el='Tous';
   if(state.fx && !all.some(s=>s.tags.includes(state.fx))) state.fx='';
-  const rows = pairs.map((p,i)=>({p,i})).filter(({p})=>!filtering()||matches(p.a)||matches(p.b));
-  renderFilters(rows.length);
+  const keep = ({p})=>!filtering()||matches(p.a)||matches(p.b);
+  const rows = pairs.map((p,i)=>({p,i})).filter(keep);
+  const auraRows = auras.map((p,i)=>({p,i})).filter(keep);
+  renderFilters(rows.length + auraRows.length);
   const L = document.getElementById('list');
-  if(!rows.length){
+  if(!rows.length && !auraRows.length){
     const others = state.q.trim() ? BREEDS.map((b,i)=>({b,i,h:hits(b)})).filter(o=>o.h && o.i!==state.b) : [];
     L.innerHTML = `<div class="empty"><b>${esc(t.empty(locBreed(breed())))}</b>${others.length
       ? `${t.elsewhere}<div class="elsewhere">${others.map(o=>`<button data-b="${o.i}"><img src="${o.b.img}" alt="">${esc(locBreed(o.b))} <span>${o.h}</span></button>`).join('')}</div>`
       : t.emptyHint}</div>`;
     return;
   }
-  L.innerHTML = `<div class="cols"><span>${t.spellCol}</span><span>${t.variantCol}</span><span class="x">${t.spellCol}</span><span class="x">${t.variantCol}</span></div><div class="pairs">` + rows.map(({p,i})=>`
+  const cols = (a,b)=>`<div class="cols"><span>${a}</span><span>${b}</span><span class="x">${a}</span><span class="x">${b}</span></div>`;
+  const spells = rows.length ? `<section class="grp">${cols(t.spellCol, t.variantCol)}<div class="pairs">` + rows.map(({p,i})=>`
     <article class="pair">
       ${spellHTML(p.a,`${state.b}-${i}-a`)}
       ${spellHTML(p.b,`${state.b}-${i}-b`,p.a)}
-    </article>`).join('') + `</div>`;
+    </article>`).join('') + `</div></section>` : '';
+  const aurasHTML = auraRows.length ? `<section class="grp grp-aura">${cols(t.auraCol, t.lineageCol)}<div class="pairs">` + auraRows.map(({p,i})=>`
+    <article class="pair">
+      ${spellHTML(p.a,`${state.b}-u${i}-a`)}
+      ${spellHTML(p.b,`${state.b}-u${i}-b`,null,t.lineage)}
+    </article>`).join('') + `</div></section>` : '';
+  L.innerHTML = spells + aurasHTML;
 }
 
 function render(){ renderClasses(); renderList(); }

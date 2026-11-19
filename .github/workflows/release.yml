@@ -31,6 +31,10 @@ jobs:
       - name: Sync spell effects (infobulles)
         run: python scripts/sync_effects.py
 
+      - name: Sync classes not yet on DofusDB (Bellaphone)
+        continue-on-error: true
+        run: python scripts/sync_dofuscollection.py --with-icons
+
       - name: Build Windows binary (--onedir, sans UPX)
         run: |
           pyinstaller --noconfirm --windowed --onedir --noupx `

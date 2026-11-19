@@ -17,5 +17,6 @@
   "16": "Maître des portails : crée des réseaux de portails qui amplifient les dégâts et permettent de frapper ou soigner à l'autre bout de la map.",
   "17": "Mage multi-éléments : combine deux éléments sur une cible (état Élémentaire) pour déclencher des effets bonus (retrait PA, vol de vie, érosion, shield).",
   "18": "Chasseur mêlée à Rage : monte sa jauge de Rage en encaissant ou tapant jusqu'à la Forme Bestiale (dégâts + résistance, sorts réduits), et pose Proie (soigne les alliés qui frappent la cible).",
-  "20": "Chevalier à lance : place sa Lance sur le terrain pour changer de zone de sort, repousser en masse et générer de gros boucliers/dégâts à mi-distance."
+  "20": "Chevalier à lance : place sa Lance sur le terrain pour changer de zone de sort, repousser en masse et générer de gros boucliers/dégâts à mi-distance.",
+  "21": "Barde à auras : applique une Bellaura (Ébène, Ivoire, Pourpre, Ocre, Turquoise ou Émeraude) et en fait grandir ou rétrécir la taille pour amplifier ses sorts, se téléporte beaucoup (Puits des Âmes, Colonne de Lumière, Horion) et coupe ses auras sous Ouroboros pour survivre."
 }

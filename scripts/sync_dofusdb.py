@@ -1,4 +1,4 @@
-"""Synchronise les 19 classes et tous leurs sorts/variantes depuis api.dofusdb.fr.
+"""Synchronise les classes et tous leurs sorts/variantes depuis api.dofusdb.fr.
 
 Usage :
     python scripts/sync_dofusdb.py

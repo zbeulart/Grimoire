@@ -35,6 +35,10 @@ jobs:
       - name: Sync spell effects
         run: python scripts/sync_effects.py
 
+      - name: Sync classes not yet on DofusDB (Bellaphone)
+        continue-on-error: true
+        run: python scripts/sync_dofuscollection.py --with-icons
+
       - name: Build static web bundle
         run: python scripts/build_web.py --out dist/web
 

@@ -1,9 +1,9 @@
 # Grimoire
 
-Petit grimoire overlay hors-ligne des **19 classes et sorts Dofus**, pensé comme plugin communautaire pour **Bworkshop** (`bworkshop.app`).
+Petit grimoire overlay hors-ligne des **20 classes et sorts Dofus**, pensé comme plugin communautaire pour **Bworkshop** (`bworkshop.app`).
 
 ## Fonctionnalités
-- **1 clic = fiche de classe** : grille des 19 classes dès l'ouverture (ex. Ouginak, Xélor, Forgelance...).
+- **1 clic = fiche de classe** : grille des 20 classes dès l'ouverture (ex. Ouginak, Xélor, Forgelance...).
 - **Paires Sort | Variante** : coûts en **PA**, **PO**, **Ligne de vue (LDV)**, **Relance (CD)**, élément et infobulles d'effets normaux/critiques.
 - **Filtres instantanés** : recherche par nom ou effet (`érosion`, `pesanteur`, `invocation`, `pousse`...) et filtres d'éléments.
 - **Mode livre flottant (widget)** : se replie en petit livre flottant toujours au-dessus du jeu (glisser pour déplacer, 1 clic pour rouvrir) + icône près de l'horloge Windows.
@@ -18,6 +18,7 @@ pip install -e ".[dev]"
 # (Optionnel) Resynchroniser les sorts, icônes et effets depuis DofusDB
 python scripts/sync_dofusdb.py --with-icons
 python scripts/sync_effects.py
+python scripts/sync_dofuscollection.py --with-icons   # classes pas encore sur DofusDB (Bellaphone)
 
 # Lancer Grimoire
 python main.py
@@ -38,4 +39,5 @@ pytest
 ## Crédits & Licence
 - Code source sous licence **MIT**.
 - Données et icônes de classes/sorts : **DofusDB** (`https://dofusdb.fr`) — usage non commercial avec attribution.
+- Sorts et icônes du Bellaphone, en attendant DofusDB : **DofusCollection** (`https://www.dofuscollection.com`).
 - Projet communautaire indépendant, non affilié à Ankama Games.

@@ -1,5 +1,5 @@
 {
-  "source": "DofusDB (https://dofusdb.fr)",
+  "source": "DofusDB (https://dofusdb.fr) + DofusCollection (https://www.dofuscollection.com)",
   "lang": "fr",
   "synced_at": "2026-11-15T04:20:59.580473+00:00",
   "breeds": [
@@ -18857,6 +18857,1263 @@
             "element": "Feu",
             "tags": [
               "Placement"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Bellaphone",
+      "description": "",
+      "img_url": "https://www.dofuscollection.com/img/breeds/symbol_21.png",
+      "pairs": [
+        {
+          "variant_id": 715,
+          "primary": {
+            "id": 33203,
+            "name": "Réminiscence",
+            "description": "Téléporte la cible à sa position précédente et occasionne des dommages Terre aux ennemis.\n\nRetire également des PA aux ennemis ou augmente ceux de l'allié ciblé s'ils sont dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15665.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 2,
+            "crit_chance": 10,
+            "element": "Terre",
+            "tags": [
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33314,
+            "name": "Barkhane",
+            "description": "Occasionne des dommages Air aux ennemis et repousse les cibles en zone.\n\nLa taille de la zone dépend de celle de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15662.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Air",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 716,
+          "primary": {
+            "id": 33209,
+            "name": "Chant des Sirènes",
+            "description": "Occasionne des dommages Eau aux ennemis et applique des effets sur la cible :\n• Repousse la cible si elle est dans la Bellaura.\n• Attire la cible si elle est hors de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15671.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 9,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 2,
+            "crit_chance": 10,
+            "element": "Eau",
+            "tags": [
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33311,
+            "name": "Pyrolyse",
+            "description": "Occasionne des dommages Feu et réduit les soins reçus par tous les ennemis dans la Bellaura.\n\nPlus la taille de la Bellaura est petite, plus les dommages sont importants.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15682.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Feu",
+            "tags": [
+              "Soin"
+            ]
+          }
+        },
+        {
+          "variant_id": 717,
+          "primary": {
+            "id": 33215,
+            "name": "Feu Sacré",
+            "description": "Occasionne des dommages Feu aux ennemis ou augmente la Puissance de l'allié ciblé.\n\nAugmente également la Puissance du lanceur si la cible est dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15677.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 0,
+            "crit_chance": 5,
+            "element": "Feu",
+            "tags": [
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33213,
+            "name": "Jusant",
+            "description": "Occasionne des dommages Eau à tous les ennemis et repousse toutes les cibles depuis le centre dans la Bellaura.\n\nAugmente la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15674.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Eau",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 718,
+          "primary": {
+            "id": 33198,
+            "name": "Zéphyr",
+            "description": "Occasionne des dommages Air aux ennemis ou applique un bouclier sur l'allié ciblé.\n\nApplique également un bouclier sur le lanceur si la cible est dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15660.png",
+            "ap_cost": 2,
+            "min_range": 0,
+            "max_range": 8,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 4,
+            "max_per_target": 2,
+            "crit_chance": 5,
+            "element": "Air",
+            "tags": [
+              "Bouclier"
+            ]
+          },
+          "variant": {
+            "id": 33313,
+            "name": "Tertre Enseveli",
+            "description": "Vole de la vie dans l'élément Terre à tous les ennemis dans la Bellaura et attire les cibles sur la bordure intérieure.\nLe coût en PA dépend de la taille de la Bellaura.\n\nRéduit la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15668.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Terre",
+            "tags": [
+              "Soin",
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 719,
+          "primary": {
+            "id": 33222,
+            "name": "Feu Blanc",
+            "description": "Soigne la cible dans le meilleur élément du lanceur.\n\nSoigne de nouveau la cible au tour suivant si elle était initialement dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15683.png",
+            "ap_cost": 2,
+            "min_range": 0,
+            "max_range": 6,
+            "range_modifiable": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 1,
+            "crit_chance": 5,
+            "element": "Multi",
+            "tags": [
+              "Soin"
+            ]
+          },
+          "variant": {
+            "id": 33232,
+            "name": "Puits des Âmes",
+            "description": "Téléporte les cibles en zone sur les premières cases disponibles dans la Bellaura.\nN'affecte pas le porteur de la Bellaura.\n\nLa taille de la zone dépend de celle de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15692.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 5,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 3,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 720,
+          "primary": {
+            "id": 33228,
+            "name": "Feu Noir",
+            "description": "Applique un poison de fin de tour volant de la vie dans le meilleur élément du lanceur.\n\nVole également de la vie dans le meilleur élément du lanceur si la cible est dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15689.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 1,
+            "crit_chance": 5,
+            "element": "Multi",
+            "tags": []
+          },
+          "variant": {
+            "id": 33226,
+            "name": "Colonne de Lumière",
+            "description": "Téléporte tous les alliés dans la Bellaura dans la zone ciblée.\nLes alliés sont téléportés en étant à même distance du centre de la Bellaura.\n\nLa taille de la zone dépend de celle de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15686.png",
+            "ap_cost": 4,
+            "min_range": 2,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 3,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 721,
+          "primary": {
+            "id": 33235,
+            "name": "Inspiration",
+            "description": "Augmente la Puissance du lanceur et réduit la taille de sa Bellaura.\nLe bonus est plus important selon la taille initiale de la Bellaura.\n\nLa Bellaura reprend sa taille initiale au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15696.png",
+            "ap_cost": 1,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33240,
+            "name": "Concorde",
+            "description": "Rapproche le lanceur vers l'allié ciblé et lui transfère la Bellaura.\n\nLa Bellaura retourne vers le lanceur au tour suivant ou si la cible meurt.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15700.png",
+            "ap_cost": 1,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 722,
+          "primary": {
+            "id": 33234,
+            "name": "Expiration",
+            "description": "Augmente la taille de la Bellaura.\n\nLa Bellaura reprend sa taille initiale au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15695.png",
+            "ap_cost": 1,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": []
+          },
+          "variant": {
+            "id": 33239,
+            "name": "Recueillement",
+            "description": "Soigne le lanceur et réduit la taille de sa Bellaura.\nLes soins sont plus importants selon la taille initiale de la Bellaura.\n\nLa Bellaura reprend sa taille initiale au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15701.png",
+            "ap_cost": 1,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Soin"
+            ]
+          }
+        },
+        {
+          "variant_id": 723,
+          "primary": {
+            "id": 33197,
+            "name": "Sirocco",
+            "description": "Rapproche le lanceur vers la cible et vole de la vie dans l'élément Air aux ennemis.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15659.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 2,
+            "crit_chance": 10,
+            "element": "Air",
+            "tags": [
+              "Soin",
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33207,
+            "name": "Ziggourat",
+            "description": "Occasionne des dommages Terre à tous les ennemis dans la Bellaura et repousse les cibles sur la bordure intérieure.\nLe coût en PA dépend de la taille de la Bellaura.\n\nAugmente la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15669.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Terre",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 724,
+          "primary": {
+            "id": 33216,
+            "name": "Foulée Rubiconde",
+            "description": "Téléporte le lanceur sur la case ciblée et vole de la vie dans l'élément Feu aux ennemis en zone.\n\nLa portée minimale et la portée maximale du sort dépendent de la taille de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15678.png",
+            "ap_cost": 3,
+            "min_range": 3,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Feu",
+            "tags": [
+              "Soin",
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33312,
+            "name": "Queue de Poisson",
+            "description": "Téléporte le lanceur symétriquement par rapport à la cible, occasionne des dommages Eau aux ennemis et soigne le lanceur.\n\nLa portée maximale du sort dépend de la taille de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15675.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 2,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Eau",
+            "tags": [
+              "Soin",
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 725,
+          "primary": {
+            "id": 33210,
+            "name": "Plongeon",
+            "description": "Échange de position avec la cible et occasionne des dommages Eau aux ennemis ou soigne les alliés.\n\nLa portée maximale du sort dépend de la taille de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15672.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 2,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 3,
+            "max_per_target": 2,
+            "crit_chance": 10,
+            "element": "Eau",
+            "tags": [
+              "Soin",
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33219,
+            "name": "Poing du Dragon",
+            "description": "Téléporte le lanceur sur la case ciblée et occasionne des dommages Feu aux ennemis en zone.\n\nLa taille de la zone dépend de la taille de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15681.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 3,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Feu",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 726,
+          "primary": {
+            "id": 33204,
+            "name": "Inhumation",
+            "description": "Occasionne des dommages Terre et retire des PA.\nLe retrait est plus important sur une cible dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15666.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 4,
+            "max_per_target": 2,
+            "crit_chance": 5,
+            "element": "Terre",
+            "tags": [
+              "Retrait PA/PM"
+            ]
+          },
+          "variant": {
+            "id": 33201,
+            "name": "Horion",
+            "description": "Téléporte le lanceur sur la case ciblée, applique un bouclier sur le lanceur et ses alliés et occasionne des dommages Air aux ennemis en zone.\n\nAugmente la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15663.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Air",
+            "tags": [
+              "Bouclier",
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 727,
+          "primary": {
+            "id": 33229,
+            "name": "Chant Funèbre",
+            "description": "Érode les ennemis et attire les cibles en zone.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15690.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Érosion",
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33223,
+            "name": "Chant Majestueux",
+            "description": "Repousse les ennemis en zone.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15687.png",
+            "ap_cost": 2,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 728,
+          "primary": {
+            "id": 33236,
+            "name": "Discorde",
+            "description": "Éloigne le lanceur de l'ennemi ciblé et lui transfère la Bellaura.\n\nLa Bellaura retourne vers le lanceur au tour suivant ou si la cible meurt.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15697.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": []
+          },
+          "variant": {
+            "id": 33238,
+            "name": "Ovation",
+            "description": "Applique les effets de la Bellaura sur son porteur pour chaque allié à l'intérieur.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15699.png",
+            "ap_cost": 2,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 4,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 729,
+          "primary": {
+            "id": 33225,
+            "name": "Chœur Cristallin",
+            "description": "Occasionne des dommages aux ennemis ou soigne les alliés dans le meilleur élément du lanceur.\n\nLes dommages sont augmentés pour chaque allié dans la Bellaura avant d'être appliqués.\nLes soins sont augmentés pour chaque ennemi dans la Bellaura avant d'être appliqués.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15684.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 6,
+            "range_modifiable": true,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 20,
+            "element": "Multi",
+            "tags": [
+              "Soin"
+            ]
+          },
+          "variant": {
+            "id": 33231,
+            "name": "Funérailles",
+            "description": "Occasionne des dommages dans le meilleur élément du lanceur.\nLes dommages sont plus importants si la cible est le seul ennemi dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15693.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 5,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 20,
+            "element": "Multi",
+            "tags": []
+          }
+        },
+        {
+          "variant_id": 730,
+          "primary": {
+            "id": 33211,
+            "name": "Lance Azur",
+            "description": "Occasionne des dommages Eau aux ennemis en zone.\nOccasionne des dommages Eau supplémentaires aux ennemis à la fois dans la zone d'effet et dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15673.png",
+            "ap_cost": 3,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Eau",
+            "tags": []
+          },
+          "variant": {
+            "id": 33218,
+            "name": "Brasier",
+            "description": "Augmente la Puissance du lanceur pour chaque ennemi dans la Bellaura et occasionne des dommages Feu.\n\nRéduit la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15680.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 1,
+            "crit_chance": 15,
+            "element": "Feu",
+            "tags": [
+              "Boost"
+            ]
+          }
+        },
+        {
+          "variant_id": 731,
+          "primary": {
+            "id": 33199,
+            "name": "Lames de Vent",
+            "description": "Occasionne des dommages Air aux ennemis en zone.\nTéléporte également les cibles à la fois dans la zone d'effet et dans la Bellaura symétriquement par rapport au centre.\n\nN'affecte pas directement le lanceur.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15661.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 3,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 0,
+            "crit_chance": 10,
+            "element": "Air",
+            "tags": [
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33206,
+            "name": "Frappe du Dragon",
+            "description": "Applique des effets sur les cibles et occasionne des dommages Terre aux ennemis en zone :\n• Téléporte les cibles symétriquement par rapport au lanceur si elles sont dans la Bellaura.\n• Attire les cibles si elles sont hors de la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15670.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 4,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 2,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Terre",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 732,
+          "primary": {
+            "id": 33205,
+            "name": "Hache d'Ambre",
+            "description": "Occasionne des dommages Terre aux ennemis en zone.\nRetire également de la Puissance aux ennemis à la fois dans la zone d'effet et dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15667.png",
+            "ap_cost": 5,
+            "min_range": 0,
+            "max_range": 3,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 20,
+            "element": "Terre",
+            "tags": [
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33200,
+            "name": "Khamsin",
+            "description": "Applique un bouclier sur le lanceur et occasionne des dommages Air aux ennemis, ou applique un bouclier sur l'allié ciblé.\nRebondit une fois sur l'entité la plus proche dans un cercle de taille 2.\n\nLe rebond continue si l'entité touchée est dans la Bellaura, et n'affecte pas le lanceur.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15664.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 5,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Air",
+            "tags": [
+              "Bouclier"
+            ]
+          }
+        },
+        {
+          "variant_id": 733,
+          "primary": {
+            "id": 33217,
+            "name": "Marteau Brasillant",
+            "description": "Occasionne des dommages Feu aux ennemis en zone.\n\nAugmente la taille de la Bellaura pour le tour en cours.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15679.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 2,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Feu",
+            "tags": []
+          },
+          "variant": {
+            "id": 33212,
+            "name": "Trombe Marine",
+            "description": "Téléporte toutes les cibles symétriquement par rapport au centre et occasionne des dommages Eau à tous les ennemis dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15676.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 1,
+            "max_per_target": 0,
+            "crit_chance": 15,
+            "element": "Eau",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 734,
+          "primary": {
+            "id": 33224,
+            "name": "Épée Opaline",
+            "description": "Occasionne des dommages Neutre aux ennemis selon la vie restante du lanceur en zone.\nRéduit également la durée des effets sur les alliés à la fois dans la zone d'effet et dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15685.png",
+            "ap_cost": 4,
+            "min_range": 1,
+            "max_range": 3,
+            "range_modifiable": false,
+            "cast_in_line": true,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 20,
+            "element": "Neutre",
+            "tags": []
+          },
+          "variant": {
+            "id": 33310,
+            "name": "Sérénade",
+            "description": "Rend la cible Intacleur et la force à suivre le lanceur immédiatement et lorsqu'il utilise ses PM.\n\nLes effets sont retirés si le lanceur ou la cible sont déplacés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15694.png",
+            "ap_cost": 2,
+            "min_range": 1,
+            "max_range": 6,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 4,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": []
+          }
+        },
+        {
+          "variant_id": 735,
+          "primary": {
+            "id": 33230,
+            "name": "Faux Ténébreuse",
+            "description": "Occasionne des dommages Neutre aux ennemis selon leur vie érodée en zone.\nRéduit également la durée des effets sur les ennemis à la fois dans la zone d'effet et dans la Bellaura.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15691.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 3,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": true,
+            "cooldown": 2,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 20,
+            "element": "Neutre",
+            "tags": [
+              "Érosion"
+            ]
+          },
+          "variant": {
+            "id": 33309,
+            "name": "Aubade",
+            "description": "Applique l'état Aubade sur le lanceur :\n• Repousse les ennemis qui entrent dans la Bellaura.\n\nLes effets peuvent être déclenchés 2 fois par ennemi par tour.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15688.png",
+            "ap_cost": 3,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 4,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          }
+        },
+        {
+          "variant_id": 736,
+          "primary": {
+            "id": 33237,
+            "name": "Extension du Territoire",
+            "description": "Étend la Bellaura sur tout le terrain.\n\nLa Bellaura reprend sa taille initiale au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15698.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 5,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": []
+          },
+          "variant": {
+            "id": 33241,
+            "name": "Ouroboros",
+            "description": "Désactive la Bellaura pour appliquer un seuil de vie sur le lanceur, l'empêchant de mourir.\nRéactive la Bellaura et soigne le lanceur au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15702.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 8,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Soin"
+            ]
+          }
+        }
+      ],
+      "auras": [
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33270,
+            "name": "Bellaura Ébène",
+            "description": "Augmente la Fuite du lanceur et de ses alliés.\nAugmente les dommages subis par ses ennemis.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15708.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33233,
+            "name": "Royaume des Ombres",
+            "description": "Occasionne des dommages dans le meilleur élément du lanceur à tous les ennemis et rend tous les alliés invisibles dans la Bellaura.\n\nApplique également l'état Royaume des Ombres sur le lanceur :\n• Occasionne des dommages aux ennemis du lanceur qui sortent de sa Bellaura dans son meilleur élément.\n• Les dommages ne peuvent être déclenchés qu'une seule fois par ennemi par tour.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15715.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": []
+          }
+        },
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33271,
+            "name": "Bellaura Ivoire",
+            "description": "Augmente les résistances du lanceur et de ses alliés.\nRetire de la Portée à ses ennemis.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15707.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Placement"
+            ]
+          },
+          "variant": {
+            "id": 33227,
+            "name": "Tour d'Ivoire",
+            "description": "Soigne tous les alliés dans la Bellaura dans le meilleur élément du lanceur et augmente leur résistance à distance.\n\nApplique également l'état Tour d'Ivoire sur le lanceur :\n• Occasionne des dommages aux ennemis du lanceur qui entrent dans sa Bellaura dans son meilleur élément.\n• Les dommages ne peuvent être déclenchés qu'une seule fois par ennemi par tour.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15714.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": [
+              "Soin"
+            ]
+          }
+        },
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33272,
+            "name": "Bellaura Pourpre",
+            "description": "Augmente la Puissance du lanceur et de ses alliés.\nRéduit les soins reçus par ses ennemis.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15706.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Soin",
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33220,
+            "name": "Creuset Écarlate",
+            "description": "Occasionne des dommages dans le meilleur élément du lanceur à tous les ennemis dans la Bellaura, réduit les soins qu'ils reçoivent et leur applique l'état Creuset Écarlate :\n• Occasionne des dommages dans le meilleur élément du lanceur à la cible lorsqu'elle utilise des PA ou des PM.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15713.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": [
+              "Soin"
+            ]
+          }
+        },
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33273,
+            "name": "Bellaura Ocre",
+            "description": "Augmente les PA du lanceur et de ses alliés.\nRetire de la Fuite à ses ennemis.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15705.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": []
+          },
+          "variant": {
+            "id": 33208,
+            "name": "Piliers de la Terre",
+            "description": "Occasionne des dommages dans le meilleur élément du lanceur à tous les ennemis dans la Bellaura.\n\nInvoque également des Piliers statiques au contact de chaque entité dans la Bellaura.\n\nLes piliers occasionnent des dommages Terre selon leur vie restante aux ennemis en zone et sont détruits au tour suivant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15712.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": [
+              "Invocation"
+            ]
+          }
+        },
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33274,
+            "name": "Bellaura Turquoise",
+            "description": "Augmente les Critiques du lanceur et de ses alliés.\nAugmente les dommages subis par ses ennemis.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15704.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Boost"
+            ]
+          },
+          "variant": {
+            "id": 33214,
+            "name": "Cité Engloutie",
+            "description": "Applique l'état Cité Engloutie, occasionne des dommages dans le meilleur élément du lanceur et minimise les effets aléatoires de tous les ennemis dans la Bellaura :\n• Soigne tous les alliés du lanceur dans la Bellaura lorsque la cible est attaquée.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15711.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": [
+              "Soin"
+            ]
+          }
+        },
+        {
+          "variant_id": 0,
+          "primary": {
+            "id": 33275,
+            "name": "Bellaura Émeraude",
+            "description": "Applique un bouclier sur le lanceur et ses alliés à la fin de leur tour.\nÉrode les ennemis du lanceur.\n\nN'affecte pas les autres Bellaphones alliés.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15703.png",
+            "ap_cost": 0,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 0,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 0,
+            "element": "Utilitaire",
+            "tags": [
+              "Érosion",
+              "Bouclier"
+            ]
+          },
+          "variant": {
+            "id": 33202,
+            "name": "Pic des Tempêtes",
+            "description": "Applique un bouclier et l'état Pic des Tempêtes sur tous les alliés et occasionne des dommages dans le meilleur élément du lanceur à tous les ennemis dans la Bellaura :\n• Renvoie une partie des dommages subis par la cible à son attaquant.",
+            "img_url": "https://www.dofuscollection.com/img/spells/15710.png",
+            "ap_cost": 4,
+            "min_range": 0,
+            "max_range": 0,
+            "range_modifiable": false,
+            "cast_in_line": false,
+            "cast_in_diagonal": false,
+            "requires_los": false,
+            "cooldown": 6,
+            "max_per_turn": 0,
+            "max_per_target": 0,
+            "crit_chance": 25,
+            "element": "Multi",
+            "tags": [
+              "Bouclier"
             ]
           }
         }

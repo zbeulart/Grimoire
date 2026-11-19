@@ -68,13 +68,15 @@ def test_overlay_navigation_and_pinning(tmp_path: Path) -> None:
     window.close()
 
 
-def test_real_dataset_loads_all_19_classes_and_ouginak(tmp_path: Path) -> None:
+def test_real_dataset_loads_all_20_classes_and_ouginak(tmp_path: Path) -> None:
     _get_app()
     spells_path = default_data_dir() / "spells_fr.json"
     if not spells_path.exists():
         return
     repo = SpellRepository.load_from_files()
-    assert len(repo.breeds) == 19
+    assert len(repo.breeds) == 20
+    bella = repo.get_breed(21)
+    assert bella is not None and bella.name == "Bellaphone" and len(bella.pairs) == 22
     ougi = repo.get_breed(18)
     assert ougi is not None
     assert ougi.name == "Ouginak"

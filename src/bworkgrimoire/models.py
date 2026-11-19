@@ -208,6 +208,8 @@ class BreedInfo:
     img_url: str
     pairs: tuple[SpellVariantPair, ...] = field(default_factory=tuple)
     tip: str = ""
+    # Sorts propres à la classe hors variantes, par deux (Bellaphone : Bellaura -> sort de lignée).
+    auras: tuple[SpellVariantPair, ...] = field(default_factory=tuple)
 
     @classmethod
     def from_dict(cls, raw: dict, tip: str = "") -> BreedInfo:
@@ -219,13 +221,17 @@ class BreedInfo:
             img_url=raw.get("img_url", ""),
             pairs=pairs,
             tip=tip or raw.get("tip", ""),
+            auras=tuple(SpellVariantPair.from_dict(p) for p in raw.get("auras", [])),
         )
 
     def to_dict(self) -> dict:
-        return {
+        data = {
             "id": self.id,
             "name": self.name,
             "description": self.description,
             "img_url": self.img_url,
             "pairs": [p.to_dict() for p in self.pairs],
         }
+        if self.auras:
+            data["auras"] = [p.to_dict() for p in self.auras]
+        return data
