@@ -1,5 +1,5 @@
 #define MyAppName "Grimoire"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "Communauté Bworkshop"
 #define MyAppURL "https://bworkshop.app/"
 #define MyAppExeName "Grimoire.exe"

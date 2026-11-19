@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bworkgrimoire"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lexique overlay instantané et hors-ligne des classes et sorts Dofus pour Bworkshop"
 readme = "README.md"
 license = { text = "MIT" }
